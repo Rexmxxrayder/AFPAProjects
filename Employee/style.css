@@ -1,0 +1,53 @@
+h1{
+    text-align: center;
+}
+
+body{
+    background-color: darkgray;
+}
+
+.populationMondiale {
+    margin: 10px auto;
+    padding: 10px 20px;
+    background-color: white;
+    width: fit-content;
+    border-radius: 5px;
+    border: 1px solid blue;
+}
+
+.populationMondiale p{
+    text-align: right;
+}
+
+table{
+    margin: 10px auto;
+    /* padding: 10px 20px; */
+    background-color: white;
+    /* width: fit-content; */
+    border-radius: 5px;
+    border: 1px solid blue;
+}
+
+table th{
+    margin:10px;
+    padding: 30px;
+    background-color: rgb(200, 200, 200);
+    min-width: 50px;
+}
+
+table tr:nth-child(2n + 1){
+    padding: 3px;
+    background-color: rgb(35, 35, 35);
+    color:white;
+}
+
+table tr{
+    padding: 3px;
+    background-color: rgb(230, 230, 230);
+    margin:10px;
+    color:  rgb(50, 50, 50);;
+}
+
+table tr th:nth-child(2n){
+    color: red;
+}

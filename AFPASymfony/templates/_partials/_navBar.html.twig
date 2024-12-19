@@ -1,0 +1,30 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+	<a class="navbar-brand" href="/">Rexcipes</a>
+</button>
+
+<div class="collapse navbar-collapse" id="navbarSupportedContent">
+	<ul class="navbar-nav mr-auto">
+		<li class="nav-item active">
+			<a class="nav-link" href="/recipe/new">Create Rexcipes
+				<span class="sr-only"></span>
+			</a>
+		</li>
+	</ul>
+	<input id="searchBar" style="width:200px" class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+	<button class="btn btn-outline-success my-2 my-sm-0" onclick="SearchCards()">Search</button>
+	<script>
+		function SearchCards() {
+			search = document.getElementById("searchBar").value;
+			console.log(search);
+			if (search == "") {
+				return;
+			}
+
+			if (!isNaN(parseInt(search))) {
+				document.location.href = '/totalDuration:' + search;
+			} else {
+				document.location.href = '/name:' + search;
+			}
+		}
+	</script>
+</div></nav>

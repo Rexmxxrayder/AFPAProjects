@@ -1,0 +1,16 @@
+    {% extends 'base.html.twig' %}
+    {% block title %}Home Page{% endblock %}
+    {% block body %}
+        <h1>Welcome to Rexcipes</h1>
+        <p>Here are our tasty Rexcipes !!!</p>
+        <div class="row">
+         {% for recipe in recipesList %}
+                 <div class="col-3 mt-3">
+            {% include '_partials/_recipeCard.html.twig' %}
+        </div>
+        {% endfor %} 
+        </div>
+    {% endblock %}
+    {% block footer %}
+            {% include '_partials/_pagination.html.twig' %}
+    {% endblock %}

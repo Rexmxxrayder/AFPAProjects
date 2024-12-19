@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="stylesheet.css" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css"
+      integrity="sha512-5Hs3dF2AEPkpNAR7UiOHba+lRSJNeM2ECkwxUIxC1Q/FLycGTbNapWXB4tP889k5T5Ju8fs4b1P5z/iB4nMfSQ=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+  </head>
+  <body>
+    <div class="container-fluid">
+      <div class="mx-4">
+        <div class="row py-3">
+          <div class="col-12 col-lg-4">
+            <div id="controls">
+              <div class="d-flex justify-content-between py-3">
+                <button
+                  id="buttonPrevious"
+                  type="button"
+                  class="btn btn-block buttonGradient"
+                  style="width: 25%"
+                  onclick="PreviousMusic()"
+                >
+                  <i class="fa-solid fa-circle-left"></i>
+                </button>
+                <button
+                  id="buttonPlayPause"
+                  type="button"
+                  class="btn btn-block buttonGradient"
+                  style="width: 32%"
+                  onclick="ButtonPlayPause()"
+                >
+                  <i class="fa-regular fa-circle-play"></i>
+                </button>
+                <button
+                  id="buttonNext"
+                  type="button"
+                  class="btn btn-block buttonGradient"
+                  style="width: 25%"
+                  onclick="NextMusic()"
+                >
+                  <i class="fa-solid fa-circle-right"></i>
+                </button>
+              </div>
+              <div class="d-flex justify-content-between py-3">
+                <button
+                  id="buttonVolumeDown"
+                  type="button"
+                  class="btn btn-block buttonGradient"
+                  style="width: 15%"
+                  onclick="VolumeDown()"
+                >
+                  <i class="fa-solid fa-volume-low"></i>
+                </button>
+                <div class="px-3" style="width: 65%">
+                  <input
+                    id="volumeSlider"
+                    type="range"
+                    class="form-range"
+                    onmouseup="SliderVolumeChange()"
+                    onmousedown="SliderVolumeSelect(true)"
+                    value="100"
+                  />
+                </div>
+                <button
+                  id="buttonVolumeup"
+                  type="button"
+                  class="btn btn-block buttonGradient"
+                  style="width: 15%"
+                  onclick="VolumeUp()"
+                >
+                  <i class="fa-solid fa-volume-high"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-md-6 col-lg-4">
+            <div id="musicDisplay" class="p-3 pr-5">
+              <h4>Nom artiste</h4>
+              <h5>Titre de la chanson</h5>
+              <input
+                type="range"
+                class="form-range"
+                id="customRange"
+                value="0"
+                onmouseup="SliderTimeChange()"
+                onmousedown="SliderTimeSelect(true)"
+              />
+            </div>
+          </div>
+          <div class="d-flex justify-content-end col-12 col-md-6 col-lg-4">
+            <div id="research">
+              <div class="p-3 pl-5">
+                <div class="input-group">
+                  <button
+                    class="btn btn-default"
+                    type="button"
+                    style="background-color: #eeedee"
+                    onclick="OnSearch()"
+                  >
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                  </button>
+                  <input
+                    id="searchInput"
+                    type="text"
+                    class="form-control"
+                    placeholder="recherche"
+                    aria-label="Example text with button addon"
+                    aria-describedby="button-addon1"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row py-3">
+          <div id="changeMedia" class="col-12 col-sm-4 col-md-3 col-lg-2">
+            <div class="list-group">
+              <a
+                href="#"
+                class="list-group-item list-group-item-action text-primary"
+                >Music</a
+              >
+              <a
+                href="#"
+                class="list-group-item list-group-item-action text-primary"
+                >Vidéos</a
+              >
+              <a
+                href="#"
+                class="list-group-item list-group-item-action text-primary"
+                >Podscast</a
+              >
+            </div>
+          </div>
+          <div id="musicsList" class="col-12 col-sm-8 col-md-9 col-lg-10">
+            <div class="row px-3"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <audio
+      controls
+      id="musicPlayer"
+      ontimeupdate="TimeUpdate()"
+      onended="NextMusic()"
+      onvolumechange="VolumeUpdate()"
+    >
+      <source src="Ressources\media\Blue_Skies.mp3" type="audio/mp3" />
+      <source src="Ressources\media\Blue_Skies.ogg" type="audio/ogg" />
+      <source src="Ressources\media\Blue_Skies.wav" type="audio/wav" />
+    </audio>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="Function.js"></script>
+    <script src="AudioManager.js"></script>
+    <script>
+      audioSrcUrl = "Ressources\\media\\";
+      audioSrcType = ["mp3", "ogg", "wav"];
+      audioName = [
+        ["Blue_Skies", "Silent Partner", 1],
+        ["Cartoon_Hoedown", "Media Right Production", 2],
+        ["Earthy_Crust", "Jingle Punks", 3],
+        ["Hold_On_a_Minute", "Silent Partner", 4],
+        ["JohnDunbarTheme", "City of Prague Philharmonic", 5],
+        ["Stay_With_You", "Silent Partner", 6],
+        ["Symphony_No_5_by_Beethoven", "Beethoven", 7],
+        ["Blue_Skies", "Silent Partner", 1],
+      ];
+      picFoldersName = ["150", "175", "250", "340"];
+      picSrcUrl = "Ressources\\pochettes\\";
+      isPlaying = false;
+      buttonPlayPause = document.getElementById("buttonPlayPause");
+      buttonPlayPause.firstElementChild.classList = [];
+      buttonPlayPause.firstElementChild.classList.add(
+        "fa-regular",
+        "fa-circle-play"
+      );
+
+      audioBalise = document.getElementById("musicPlayer");
+      isSliderTimeSelect = false;
+      isSliderVolumeSelect = false;
+      Start();
+
+      function ButtonPlayPause() {
+        isPlaying = !isPlaying;
+        if (isPlaying) {
+          PlayMusic();
+        } else {
+          PauseMusic();
+        }
+      }
+
+      function PlayMusic() {
+        buttonPlayPause.firstElementChild.classList = [];
+        buttonPlayPause.firstElementChild.classList.add("fa-solid", "fa-pause");
+        audioBalise.play();
+      }
+
+      function PauseMusic() {
+        buttonPlayPause.firstElementChild.classList = [];
+        buttonPlayPause.firstElementChild.classList.add(
+          "fa-regular",
+          "fa-circle-play"
+        );
+        audioBalise.pause();
+      }
+
+      function NextMusic() {
+        ChangeMusic(audioManager.NextMusic());
+        PlayMusic();
+      }
+
+      function PreviousMusic() {
+        ChangeMusic(audioManager.PreviousMusic());
+        PlayMusic();
+      }
+
+      function NewMusic(id) {
+        ChangeMusic(audioManager.ChangeMusicId(id));
+        ChangeMusicTitle();
+        PlayMusic();
+      }
+
+      function ChangeMusic(audioSrc) {
+        for (let index = 0; index < audioBalise.childElementCount; index++) {
+          audioBalise.children[index].setAttribute("src", audioSrc[index]);
+        }
+        audioBalise.load();
+      }
+
+      function ChangeMusicTitle() {
+        currentMusicCard = document.getElementById(
+          audioManager.GetCurrentMusicId
+        );
+        document.getElementById("musicDisplay").children[0].innerText =
+          currentMusicCard.getAttribute("data-title");
+        document.getElementById("musicDisplay").children[1].innerText =
+          currentMusicCard.getAttribute("data-artist");
+      }
+
+      function TimeUpdate() {
+        if (!isNaN(audioBalise.duration) && !isSliderTimeSelect) {
+          document.getElementById("musicDisplay").children[2].value =
+            (audioBalise.currentTime / audioBalise.duration) * 100;
+        }
+      }
+
+      function SliderTimeSelect(sliderSelect) {
+        isSliderTimeSelect = sliderSelect;
+      }
+
+      function SliderTimeChange() {
+        audioBalise.currentTime =
+          (audioBalise.duration / 100) *
+          document.getElementById("musicDisplay").children[2].value;
+        SliderTimeSelect(false);
+      }
+
+      function SliderVolumeSelect(sliderSelect) {
+        isSliderVolumeSelect = sliderSelect;
+      }
+
+      function SliderVolumeChange() {
+        audioBalise.volume =
+          document.getElementById("volumeSlider").value / 100;
+      }
+
+      function VolumeUpdate() {
+        if (!isSliderVolumeSelect) {
+          document.getElementById("volumeSlider").value =
+            audioBalise.volume * 100;
+        }
+      }
+
+      function VolumeUp() {
+        audioBalise.volume = Clamp(audioBalise.volume * 100 + 10, 0, 100) / 100;
+      }
+
+      function VolumeDown() {
+        audioBalise.volume = Clamp(audioBalise.volume * 100 - 10, 0, 100) / 100;
+      }
+
+      function OnSearch() {
+        allowedMusic = document.getElementById("searchInput").value;
+        Start(document.getElementById("searchInput").value);
+      }
+
+      function Start(allowedMusic = undefined) {
+        Clear();
+        isSliderTimeSelect = false;
+        isSliderVolumeSelect = false;
+        console.log(allowedMusic);
+        console.log(allowedMusic == undefined);
+        console.log(allowedMusic == "");
+        audioNameModified = [];
+        if (allowedMusic == undefined || allowedMusic == "") {
+          audioNameModified = audioName;
+        } else {
+          for (i = 0; i < audioName.length; i++) {
+            txtValue = audioName[i][0];
+            console.log(txtValue);
+            console.log(txtValue.toUpperCase().indexOf(allowedMusic) > -1);
+            if (
+              txtValue.toUpperCase().indexOf(allowedMusic.toUpperCase()) > -1
+            ) {
+              audioNameModified.push(audioName[i]);
+            }
+          }
+        }
+
+        audioManager = new AudioManager(
+          CreateAllMusicsCard(
+            audioNameModified,
+            audioSrcUrl,
+            audioSrcType,
+            picFoldersName,
+            picSrcUrl
+          )
+        );
+      }
+
+      function Clear() {
+        array = Array.from(
+          document.getElementById("musicsList").firstElementChild.children
+        );
+        array.forEach((element) => {
+          element.remove();
+        });
+      }
+    </script>
+  </body>
+</html>

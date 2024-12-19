@@ -1,0 +1,148 @@
+@font-face {
+    font-family: OpenSans;
+    src: url('Fonts/OpenSans-Regular.ttf');
+}
+
+@font-face {
+    font-family: OpenSans;
+    src: url('Fonts/OpenSans-Bold.ttf');
+    font-weight: bold;
+}
+
+@font-face {
+    font-family: OpenSansLight;
+    src: url('Fonts/OpenSans-Light.ttf');
+}
+
+h1{
+    padding: 1rem 1rem;
+    margin: 1rem auto;
+}
+
+h2{
+    display: inline-block;
+    padding: 1rem 1rem;
+}
+
+body{
+    background-color: #f5f5f5;
+}
+
+.MainDiv{
+    width: 100%;
+    max-width: 1024px;
+    min-width: 320px;
+    margin: 0px auto;
+    font-family: OpenSans;
+}
+
+.insideForm {
+    display: inline-block;
+    margin : 0rem 1rem 1rem 1rem;
+}
+
+.LabelSelect{
+    background-color: #f5f5f5;
+    font-family: OpenSans;
+}
+
+.SelectTable {
+    color :#4e5762;
+    background-color: white;
+}
+
+.TableTitle{
+    color : #4e5762;
+    display: inline;
+}
+
+.WorldTable table{
+    background-color: #f5f5f5;
+    margin: 0px auto 0px auto;
+    font-family: OpenSansLight;
+    font-size: small;
+    color : #4e5762;
+}
+
+.WorldTable tr{
+    text-align: right;
+}
+
+.WorldTable th{
+    padding: 8px;
+    padding-left: 15px;
+    text-align: left;
+}
+
+.WorldTable td, th {
+    padding: 8px;
+    line-height: 1em;
+}
+
+
+.WorldTable tr:nth-child(2n +1  ){
+    background-color: #f8c3c1;
+}
+
+.WorldTable tr:nth-child(2n){
+    background-color: #fdebea;
+}
+
+.WorldTable tr:last-child{
+    background-color: #e9362f;
+    color: white;
+    font-family: OpenSans;
+}
+
+
+.FirstChildTable {
+    background-color: white;
+    font-family: OpenSans;
+    font-size: medium;
+    text-align: center!important;
+    vertical-align: top;
+}
+
+.tip {
+    height: auto;
+    margin: auto;
+    text-align: center;
+}
+
+.formButton {
+    border: black;
+    text-align: center;
+    display: block;
+    margin: 0px auto;
+    padding: 0px auto;
+}
+
+.formButton a{
+    text-decoration: none;
+}
+
+
+.ComeBackButton a{
+    margin: 10px auto;
+    color: rgb(255, 255, 255);
+    font-size: 22px;
+    line-height: 22px;
+    padding: 6px;
+    border-radius: 8px;
+    font-family: OpenSans;
+    font-weight: normal;
+    text-decoration: none;
+    font-style: bold;
+    font-variant: normal;
+    text-transform: none;
+    background-image: linear-gradient(to right, rgb(28, 110, 164) 0%, rgb(35, 136, 203) 50%, rgb(20, 78, 117) 100%);
+    box-shadow: rgb(0, 0, 0) 5px 5px 15px 5px;
+    border: 2px solid rgb(28, 110, 164);
+    display: inline-block;
+}
+    
+.HiddenCell {
+    background-color: #f5f5f5;
+}
+
+    

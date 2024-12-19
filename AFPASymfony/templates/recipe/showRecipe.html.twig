@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Rexcipe{% endblock %}
+
+{% block body %}
+    <h1>{{ recipe.title }}</h1>
+    <h2>{{ recipe.category.value }}</h2>
+
+	<img src={{  asset('Upload/Image/' ~ recipe.getImageName()) }} alt="image">
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Description</th>
+                <td>{{ recipe.getDescription() }}</td>
+            </tr>
+            <tr>
+                <th>ingredients</th>
+                <td>{{ recipe.ingredients }}</td>
+            </tr>
+            <tr>
+                <th>Preparation Steps</th>
+                <td>{{ recipe.preparation }}</td>
+            </tr>
+            <tr>
+                <th>Preparation Time</th>
+                <td>{{ recipe.preparationTime }}</td>
+            </tr>
+            <tr>
+                <th>Cooking Time</th>
+                <td>{{ recipe.cookingTime }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a role="button" class="btn btn-primary" href="{{ path('home') }}">Back to Rexcipes</a>
+
+    <a role="button" class="btn btn-primary" href="{{ path('modify_recipe', {'id': recipe.id}) }}">Edit</a>
+
+{% endblock %}
