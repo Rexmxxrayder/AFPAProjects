@@ -1,20 +1,40 @@
-<nav aria-label="...">
-  <ul class="pagination justify-content-center">
-    <li class="page-item {{currentPage == 0 ? "disabled" : ""}}">
-      <span class="page-link">Previous</span>
-    </li>
-    <li class="page-item"><a class="page-link" href="#">1</a></li>
-    <li class="page-item active">
-      <span class="page-link">
-        2
-        <span class="sr-only">(current)</span>
-      </span>
-    </li>
-    <li class="page-item"><a class="page-link" href="#">3</a></li>
-    {% if(currentPage == paginationSize - 1) %}
-    <li class="page-item">
-      <a class="page-link" href="#">Next</a>
-    </li>
-    {{% endif %}}
-  </ul>
-</nav>
+{% set paginationMiddleSize = 4 %}
+{% set currentPage = currentPage + 1 %}
+{% set currentPage = currentPage + 1 %}
+{% set paginationSize = paginationSize + 1 %}
+{% set currentPage = (currentPage < 1) ? 1 : (currentPage > paginationSize) ? paginationSize : currentPage %}
+{% set min = ((currentPage - paginationMiddleSize - 1) < 1) ? 1 : ((currentPage) > paginationSize - paginationMiddleSize) ? paginationSize - paginationMiddleSize : currentPage %}
+{% set max = ((min + paginationMiddleSize) > paginationSize) ? paginationSize : min + paginationMiddleSize %}
+<div class="container fixed-bottom">
+	<nav aria-label="...">
+		<ul class="pagination justify-content-center">
+			{% if currentPage != 1 %}
+				<li class="page-item">
+					<a class="page-link" href="/recipe/p:{{ currentPage - 2}}">Previous</a>
+				</li>
+			{% endif %}
+			{% for i in range(min, max) %}
+				<li class="{{ (currentPage == i ? 'page-item active' : 'page-item') }}">
+					<a class="page-link" href="/recipe/p:{{i - 1}}">{{ i}}</a>
+				</li>
+			{% endfor %}
+		{# {{ dump(currentPage)  }}}
+		{{ dump(paginationSize)  }}} #}
+			{% if currentPage < paginationSize - paginationMiddleSize %}
+				<li class="page-item">
+					<a class="page-link">...</a>
+				</li>
+      {% endif %}
+      {% if max < paginationSize %}
+				<li class="page-item">
+					<a class="page-link" href="/recipe/p:{{ paginationSize - 1}}">{{paginationSize}}</a>
+				</li>
+			{% endif %}
+			{% if currentPage != paginationSize %}
+				<li class="page-item">
+					<a class="page-link" href="/recipe/p:{{ currentPage}}">Next</a>
+				</li>
+			{% endif %}
+		</ul>
+	</nav>
+</div>

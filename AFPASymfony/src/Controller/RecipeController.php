@@ -17,27 +17,35 @@ class RecipeController extends AbstractController
 {
     const RECIPES_BY_PAGE = 12;
 
-     #[Route(['/', '/recipe'], name: 'home')]
-    public function home(RecipeRepository $recipeRepository): Response
+    #[Route(['/', '/recipe/p:{p}'], name: 'home',  defaults: ['p' => 0])]
+    public function home(int $p, RecipeRepository $recipeRepository): Response
     {
-        return $this->ShowRecipes($recipeRepository->findAll());
+        $query = $recipeRepository->createQueryBuilder("recipe")
+            ->setMaxResults(self::RECIPES_BY_PAGE)
+            ->setFirstResult(self::RECIPES_BY_PAGE * $p)
+            ->getQuery();
+        return $this->ShowRecipes($query->execute(), $p, $recipeRepository);
     }
 
     #[Route('/recipe/td:{totalDuration}p:{p}', name: 'homeTotalDuration',  defaults: ['p' => 0])]
     public function homeDuration(int $totalDuration, int $p, RecipeRepository $recipeRepository): Response
     {
-        return $this->ShowRecipes($recipeRepository->findAllWithTotalDurationAround($totalDuration, self::RECIPES_BY_PAGE, self::RECIPES_BY_PAGE * $p,), $p);
+        return $this->ShowRecipes($recipeRepository->findAllWithTotalDurationAround($totalDuration, self::RECIPES_BY_PAGE, self::RECIPES_BY_PAGE * $p,), $p, $recipeRepository);
     }
 
     #[Route('/recipe/name:{name}p:{p}', name: 'homeName',  defaults: ['p' => 0])]
     public function homeName(string $name, int $p, RecipeRepository $recipeRepository): Response
     {
-        return $this->ShowRecipes($recipeRepository->findAllLikeString($name, self::RECIPES_BY_PAGE, self::RECIPES_BY_PAGE * $p,), $p);
+        return $this->ShowRecipes($recipeRepository->findAllLikeString($name, self::RECIPES_BY_PAGE, self::RECIPES_BY_PAGE * $p,), $p, $recipeRepository);
     }
 
-    public function ShowRecipes(array $recipesList, int $currentPage = 0): Response
+    public function ShowRecipes(array $recipesList, int $currentPage = 0, RecipeRepository $recipeRepository): Response
     {
-        $paginationSize = count($recipesList) / self::RECIPES_BY_PAGE + 1;
+        $paginationSize = (int)ceil($recipeRepository->GetTableSize() / self::RECIPES_BY_PAGE - 1);
+        if ($paginationSize == 0) {
+            $paginationSize = 1;
+        }
+        
         return $this->render('home.html.twig', [
             'currentPage' => $currentPage,
             'paginationSize' => $paginationSize,

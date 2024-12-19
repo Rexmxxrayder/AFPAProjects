@@ -41,6 +41,8 @@ class RecipeRepository extends ServiceEntityRepository
     //        ;
     //    }
 
+
+
     public function findAllLikeString(string $string, int $limit, int $offset = 0): array
     {
         $qb = $this->createQueryBuilder("recipe")
@@ -75,4 +77,13 @@ class RecipeRepository extends ServiceEntityRepository
     //     $result = $resultSet->fetchAllAssociative();
     //     return $result;
     // }
+
+    public function GetTableSize(): int
+    {
+        $conn = $this->getEntityManager()->getConnection();
+        $sql = "SELECT COUNT(*) AS 'Size' FROM recipe";
+        $resultSet = $conn->executeQuery($sql);
+        $result = $resultSet->fetchAssociative();
+        return $result['Size'];
+    }
 }
