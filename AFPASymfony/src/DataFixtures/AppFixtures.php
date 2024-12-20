@@ -4,13 +4,39 @@ namespace App\DataFixtures;
 
 
 use App\Entity\Recipe;
+use App\Entity\User;
 use App\Enum\RecipeCategory;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class AppFixtures extends Fixture {
+
+    private UserPasswordHasherInterface $passwordHasher;
+
+    // Injection du service UserPasswordHasherInterface via le constructeur
+    public function __construct(UserPasswordHasherInterface $passwordHasher)
+    {
+        $this->passwordHasher = $passwordHasher;
+    }
     public function load(ObjectManager $manager): void
     {   
+
+        $user = new User();
+        $user->setFirstName('John');
+        $user->setsurname('Doe');
+        $user->setEmail('JohnDoe@gmail.com');
+        $user->setPassword($this->passwordHasher->hashPassword($user, 'ffffffff'));
+
+        $user2 = new User();
+        $user2->setFirstName('F');
+        $user2->setsurname('F');
+        $user2->setEmail('F@gmail.com');
+        $user2->setPassword($this->passwordHasher->hashPassword($user, 'ffffffff'));
+
+        $manager->persist($user);
+        $manager->persist($user2);
+
         $recipes = [];
         for($i = 0; $i < 200; $i++ ) {
             $recipes[$i] = new Recipe();
@@ -22,6 +48,8 @@ class AppFixtures extends Fixture {
             $recipes[$i]->setCookingTime(10);
             $recipes[$i]->setImageName(rand(0,1) == 1 ? 'images.jfif' : 'Smash-Burger.webp');
             $recipes[$i]->setCategory(RecipeCategory::Dessert);
+            $recipes[$i]->setAuthor(rand(0,1) == 1 ? $user : $user2);
+            $recipes[$i]->setPrivate(rand(0,1));
             $manager->persist($recipes[$i]);
         }
 

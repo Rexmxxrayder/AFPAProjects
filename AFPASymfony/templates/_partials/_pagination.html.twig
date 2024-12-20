@@ -1,6 +1,5 @@
 {% set paginationMiddleSize = 4 %}
 {% set currentPage = currentPage + 1 %}
-{% set currentPage = currentPage + 1 %}
 {% set paginationSize = paginationSize + 1 %}
 {% set currentPage = (currentPage < 1) ? 1 : (currentPage > paginationSize) ? paginationSize : currentPage %}
 {% set min = ((currentPage - paginationMiddleSize - 1) < 1) ? 1 : ((currentPage) > paginationSize - paginationMiddleSize) ? paginationSize - paginationMiddleSize : currentPage %}
@@ -10,16 +9,14 @@
 		<ul class="pagination justify-content-center">
 			{% if currentPage != 1 %}
 				<li class="page-item">
-					<a class="page-link" href="/recipe/p:{{ currentPage - 2}}">Previous</a>
+					<a role="button" class="page-link text-primary" onclick="ChangePage({{ currentPage - 2}})">Previous</a>
 				</li>
 			{% endif %}
 			{% for i in range(min, max) %}
 				<li class="{{ (currentPage == i ? 'page-item active' : 'page-item') }}">
-					<a class="page-link" href="/recipe/p:{{i - 1}}">{{ i}}</a>
+					<a role="button" class="{{ (currentPage == i ? 'page-link text-white' : 'page-link text-primary') }}" onclick="ChangePage({{ i - 1}})">{{ i}}</a>
 				</li>
 			{% endfor %}
-		{# {{ dump(currentPage)  }}}
-		{{ dump(paginationSize)  }}} #}
 			{% if currentPage < paginationSize - paginationMiddleSize %}
 				<li class="page-item">
 					<a class="page-link">...</a>
@@ -27,14 +24,21 @@
       {% endif %}
       {% if max < paginationSize %}
 				<li class="page-item">
-					<a class="page-link" href="/recipe/p:{{ paginationSize - 1}}">{{paginationSize}}</a>
+					<a role="button" class="page-link text-primary" onclick="ChangePage({{ paginationSize - 1}})">{{paginationSize}}</a>
 				</li>
 			{% endif %}
 			{% if currentPage != paginationSize %}
 				<li class="page-item">
-					<a class="page-link" href="/recipe/p:{{ currentPage}}">Next</a>
+					<a role="button" class="page-link text-primary" onclick="ChangePage({{ currentPage}})" >Next</a>
 				</li>
 			{% endif %}
 		</ul>
 	</nav>
 </div>
+<script>
+	function ChangePage(newPage){
+		regex = /\/recipe\/p:(\d{1,4})/;
+        document.location.href = document.location.href.replace(regex, `/recipe/p:${newPage}`);
+	}
+
+</script>

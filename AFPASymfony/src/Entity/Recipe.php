@@ -39,6 +39,13 @@ class Recipe
     #[ORM\Column(length: 255)]
     private ?string $imageName = null;
 
+    #[ORM\ManyToOne(inversedBy: 'recipes')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $Author = null;
+
+    #[ORM\Column]
+    private ?bool $isPrivate = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -136,6 +143,30 @@ class Recipe
     public function setImageName(string $imageName): static
     {
         $this->imageName = $imageName;
+
+        return $this;
+    }
+
+    public function getAuthor(): ?User
+    {
+        return $this->Author;
+    }
+
+    public function setAuthor(?User $Author): static
+    {
+        $this->Author = $Author;
+
+        return $this;
+    }
+
+    public function isPrivate(): ?bool
+    {
+        return $this->isPrivate;
+    }
+
+    public function setPrivate(bool $isPrivate): static
+    {
+        $this->isPrivate = $isPrivate;
 
         return $this;
     }

@@ -17,8 +17,30 @@ class RecipeController extends AbstractController
 {
     const RECIPES_BY_PAGE = 12;
 
-    #[Route(['/', '/recipe/p:{p}'], name: 'home',  defaults: ['p' => 0])]
-    public function home(int $p, RecipeRepository $recipeRepository): Response
+    #[Route(['/recipe'], name: 'recipe')]
+    public function recipeRedirect(RecipeRepository $recipeRepository)
+    {
+        return $this->redirect('/recipe/p:0');
+    }
+
+    #[Route(['/recipe/p:{p}', '/recipe/p:{p}/{r}:{rv}', '/recipe/p:{p}/{r}:{rv'], name: 'recipeSpec',  defaults: ['p' => 0, 'r' => '', 'rv' => ''])]
+    public function recipe(int $p, string $r, string $rv, RecipeRepository $recipeRepository): Response
+    {
+        if ($r == '' || $rv == '') {
+            return $this->allRecipes($p, $recipeRepository);
+        }
+
+        switch ($r) {
+            case 'td':
+                return $this->recipesAroundTotalDuration((int)$rv, $p, $recipeRepository);
+            case 'n':
+                return $this->recipesWithName($rv, $p, $recipeRepository);
+            default:
+                return $this->allRecipes($p, $recipeRepository);
+        }
+    }
+
+    public function allRecipes(int $p, RecipeRepository $recipeRepository): Response
     {
         $query = $recipeRepository->createQueryBuilder("recipe")
             ->setMaxResults(self::RECIPES_BY_PAGE)
@@ -27,14 +49,12 @@ class RecipeController extends AbstractController
         return $this->ShowRecipes($query->execute(), $p, $recipeRepository);
     }
 
-    #[Route('/recipe/td:{totalDuration}p:{p}', name: 'homeTotalDuration',  defaults: ['p' => 0])]
-    public function homeDuration(int $totalDuration, int $p, RecipeRepository $recipeRepository): Response
+    public function recipesAroundTotalDuration(int $totalDuration, int $p, RecipeRepository $recipeRepository): Response
     {
         return $this->ShowRecipes($recipeRepository->findAllWithTotalDurationAround($totalDuration, self::RECIPES_BY_PAGE, self::RECIPES_BY_PAGE * $p,), $p, $recipeRepository);
     }
 
-    #[Route('/recipe/name:{name}p:{p}', name: 'homeName',  defaults: ['p' => 0])]
-    public function homeName(string $name, int $p, RecipeRepository $recipeRepository): Response
+    public function recipesWithName(string $name, int $p, RecipeRepository $recipeRepository): Response
     {
         return $this->ShowRecipes($recipeRepository->findAllLikeString($name, self::RECIPES_BY_PAGE, self::RECIPES_BY_PAGE * $p,), $p, $recipeRepository);
     }
@@ -45,7 +65,7 @@ class RecipeController extends AbstractController
         if ($paginationSize == 0) {
             $paginationSize = 1;
         }
-        
+
         return $this->render('home.html.twig', [
             'currentPage' => $currentPage,
             'paginationSize' => $paginationSize,

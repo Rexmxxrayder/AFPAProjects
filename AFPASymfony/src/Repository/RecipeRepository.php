@@ -65,7 +65,6 @@ class RecipeRepository extends ServiceEntityRepository
             ->setParameter("high", $high)
             ->setParameter("low", $low);
         $query = $qb->getQuery();
-        dump($qb->getQuery()->GetSQL());
         return $query->execute();
     }
 
