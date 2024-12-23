@@ -3,86 +3,60 @@
 namespace App\Repository;
 
 use App\Entity\Recipe;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\ORM\QueryBuilder;
 
 /**
  * @extends ServiceEntityRepository<Recipe>
  */
 class RecipeRepository extends ServiceEntityRepository
 {
+
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Recipe::class);
     }
 
-    //    /**
-    //     * @return Recipe[] Returns an array of Recipe objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('r')
-    //            ->andWhere('r.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('r.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
-
-    //    public function findOneBySomeField($value): ?Recipe
-    //    {
-    //        return $this->createQueryBuilder('r')
-    //            ->andWhere('r.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
-
-
-
-    public function findAllLikeString(string $string, int $limit, int $offset = 0): array
+    public function AddWhereTitleLikeString(QueryBuilder $qb, string $string): QueryBuilder
     {
-        $qb = $this->createQueryBuilder("recipe")
-            ->where("recipe.title LIKE :string")
-            ->setMaxResults($limit)
-            ->setFirstResult($offset)
+        $qb->andWhere("recipe.title LIKE :string")
             ->setParameter("string", '%' . $string . '%');
-        $query = $qb->getQuery();
-        return $query->execute();
+        return $qb;
     }
 
-    public function findAllWithTotalDurationAround(int $totalDuration, int $limit, int $offset = 0): array
+    public function AddWhereAroundTotalDuration(QueryBuilder $qb, int $totalDuration): QueryBuilder
     {
         $high = $totalDuration + 5;
         $low = $totalDuration - 5 < 0 ? 0 : $totalDuration - 5;
-        $qb = $this->createQueryBuilder("recipe")
-            ->where("recipe.preparationTime + recipe.cookingTime < :high AND recipe.preparationTime + recipe.cookingTime >= :low ")
-            ->setMaxResults($limit)
-            ->setFirstResult($offset)
+        $qb->andWhere("recipe.preparationTime + recipe.cookingTime < :high AND recipe.preparationTime + recipe.cookingTime >= :low ")
             ->setParameter("high", $high)
             ->setParameter("low", $low);
-        $query = $qb->getQuery();
-        return $query->execute();
+        return $qb;
     }
 
-    // public function findAllLikeString(string $string): array
-    // {
-    //     $conn = $this->getEntityManager()->getConnection();
-    //     $sql = "SELECT * FROM `recipe` WHERE recipe.title LIKE '%" . $string . "%'";
-    //     $resultSet = $conn->executeQuery($sql);
-    //     $result = $resultSet->fetchAllAssociative();
-    //     return $result;
-    // }
-
-    public function GetTableSize(): int
+    public function AddWhereAuthorIsUser(QueryBuilder $qb, int $userId): QueryBuilder
     {
-        $conn = $this->getEntityManager()->getConnection();
-        $sql = "SELECT COUNT(*) AS 'Size' FROM recipe";
-        $resultSet = $conn->executeQuery($sql);
-        $result = $resultSet->fetchAssociative();
-        return $result['Size'];
+        $qb->andWhere("recipe.author = :userId")
+            ->setParameter("userId", $userId);
+        return $qb;
+    }
+
+    public function AddWhereRecipeNotPrivate(QueryBuilder $qb): QueryBuilder
+    {
+        $qb->andWhere('recipe.isPrivate != true');
+        return $qb;
+    }
+
+    public function AddOnlyFavorite(User $user,QueryBuilder $qb): QueryBuilder
+    {
+        $qb->andWhere($qb->expr()->in('recipe.id', $user->getFavorites()));
+        return $qb;
+    }
+
+    public function GetSize(QueryBuilder $qb) : int {
+        $qb->select('count(recipe)');
+        return $qb->getQuery()->getResult()[0]['1'];
     }
 }

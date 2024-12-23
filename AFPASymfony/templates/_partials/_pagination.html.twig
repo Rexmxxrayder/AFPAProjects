@@ -17,7 +17,7 @@
 					<a role="button" class="{{ (currentPage == i ? 'page-link text-white' : 'page-link text-primary') }}" onclick="ChangePage({{ i - 1}})">{{ i}}</a>
 				</li>
 			{% endfor %}
-			{% if currentPage < paginationSize - paginationMiddleSize %}
+			{% if max < paginationSize - 1 %}
 				<li class="page-item">
 					<a class="page-link">...</a>
 				</li>
@@ -37,8 +37,8 @@
 </div>
 <script>
 	function ChangePage(newPage){
-		regex = /\/recipe\/p:(\d{1,4})/;
-        document.location.href = document.location.href.replace(regex, `/recipe/p:${newPage}`);
+		regex = /p:(\d{1,4})/;
+        document.location.href = document.location.href.replace(regex, `p:${newPage}`);
 	}
 
 </script>

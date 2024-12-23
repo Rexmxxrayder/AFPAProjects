@@ -9,6 +9,7 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -32,7 +33,7 @@ class RecipeType extends AbstractType
                         'maxMessage' => 'No more than {{ limit }} character for the title pls',
                     ]),
                 ]
-                ])
+            ])
             ->add('description')
             ->add('ingredients', TextType::class, [
                 'constraints' => [
@@ -48,11 +49,11 @@ class RecipeType extends AbstractType
                 'constraints' => [
                     new NotBlank(),
                     new GreaterThanOrEqual([
-                        'value'=> 1,
+                        'value' => 1,
                         'message' => 'Preparation Duration too low'
                     ]),
                     new LessThanOrEqual([
-                        'value'=> 600,
+                        'value' => 600,
                         'message' => 'Preparation Duration too high'
                     ]),
                 ]
@@ -61,11 +62,11 @@ class RecipeType extends AbstractType
                 'constraints' => [
                     new NotBlank(),
                     new GreaterThanOrEqual([
-                        'value'=> 0,
+                        'value' => 0,
                         'message' => 'Cooking Duration too low'
                     ]),
                     new LessThanOrEqual([
-                        'value'=> 600,
+                        'value' => 600,
                         'message' => 'Cooking Duration too high'
                     ]),
                 ]
@@ -87,10 +88,12 @@ class RecipeType extends AbstractType
                 'required' => false,
                 'mapped' => false
             ])
+            ->add('isPrivate', CheckboxType::class, [
+                'attr' => ['class' => 'form-check-input'],
+            ])
             ->add('save', SubmitType::class, [
                 'attr' => ['class' => 'save'],
-            ]);
-        ;
+            ]);;
     }
 
     public function configureOptions(OptionsResolver $resolver): void

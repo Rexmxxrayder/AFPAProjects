@@ -2,77 +2,115 @@
 
 namespace App\Controller;
 
+use App\Repository\RecipeRepository;
+use App\Repository\UserRepository;
 use App\Form\RecipeType;
 use App\Entity\Recipe;
+use App\Entity\User;
 use Gedmo\Sluggable\Util\Urlizer;
-use App\Repository\RecipeRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Filesystem\Filesystem;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+
 
 class RecipeController extends AbstractController
 {
     const RECIPES_BY_PAGE = 12;
 
-    #[Route(['/recipe'], name: 'recipe')]
-    public function recipeRedirect(RecipeRepository $recipeRepository)
+    #[Route(['/recipe', '/home'], name: 'recipe')]
+    public function recipeRedirect()
     {
-        return $this->redirect('/recipe/p:0');
+        return $this->redirect('/recipe/search/p:0');
     }
 
-    #[Route(['/recipe/p:{p}', '/recipe/p:{p}/{r}:{rv}', '/recipe/p:{p}/{r}:{rv'], name: 'recipeSpec',  defaults: ['p' => 0, 'r' => '', 'rv' => ''])]
-    public function recipe(int $p, string $r, string $rv, RecipeRepository $recipeRepository): Response
+    #[Route(['/recipe/search/{parameters}'], name: 'recipeSpec',  defaults: ['parameters' => ''])]
+    public function recipe(string $parameters, RecipeRepository $recipeRepository): Response
     {
-        if ($r == '' || $rv == '') {
-            return $this->allRecipes($p, $recipeRepository);
+        preg_match_all('/([a-zA-Z0-9\-_]+):([a-zA-Z0-9\-_])(?=\;|$)/', $parameters, $matches);
+        $parametersArr = array_combine($matches[1], $matches[2]);
+
+        $query = $recipeRepository->createQueryBuilder("recipe");
+        $query->where('true = true');
+
+        $pageIndex = array_key_exists("p", $parametersArr) ? intval($parametersArr["p"]) : 0;
+
+        if (array_key_exists("user", $parametersArr)) {
+            $twig = 'userRecipe.html.twig';
+            $query = $recipeRepository->AddWhereAuthorIsUser($query, $parametersArr['user']);
+        } else {
+            $twig = 'recipe.html.twig';
+            $query = $recipeRepository->AddWhereRecipeNotPrivate($query);
         }
 
-        switch ($r) {
-            case 'td':
-                return $this->recipesAroundTotalDuration((int)$rv, $p, $recipeRepository);
-            case 'n':
-                return $this->recipesWithName($rv, $p, $recipeRepository);
-            default:
-                return $this->allRecipes($p, $recipeRepository);
+
+        if (array_key_exists("td", $parametersArr)) {
+            $query = $recipeRepository->AddWhereAroundTotalDuration($query, intval($parametersArr['td']));
         }
-    }
 
-    public function allRecipes(int $p, RecipeRepository $recipeRepository): Response
-    {
-        $query = $recipeRepository->createQueryBuilder("recipe")
-            ->setMaxResults(self::RECIPES_BY_PAGE)
-            ->setFirstResult(self::RECIPES_BY_PAGE * $p)
-            ->getQuery();
-        return $this->ShowRecipes($query->execute(), $p, $recipeRepository);
-    }
+        if (array_key_exists("f", $parametersArr)) {
+            $query = $recipeRepository->AddWhereAroundTotalDuration($query, intval($parametersArr['td']));
+        }
 
-    public function recipesAroundTotalDuration(int $totalDuration, int $p, RecipeRepository $recipeRepository): Response
-    {
-        return $this->ShowRecipes($recipeRepository->findAllWithTotalDurationAround($totalDuration, self::RECIPES_BY_PAGE, self::RECIPES_BY_PAGE * $p,), $p, $recipeRepository);
-    }
+        if (array_key_exists("n", $parametersArr)) {
+            $query = $recipeRepository->AddWhereTitleLikeString($query, $parametersArr['n']);
+        }
 
-    public function recipesWithName(string $name, int $p, RecipeRepository $recipeRepository): Response
-    {
-        return $this->ShowRecipes($recipeRepository->findAllLikeString($name, self::RECIPES_BY_PAGE, self::RECIPES_BY_PAGE * $p,), $p, $recipeRepository);
-    }
 
-    public function ShowRecipes(array $recipesList, int $currentPage = 0, RecipeRepository $recipeRepository): Response
-    {
-        $paginationSize = (int)ceil($recipeRepository->GetTableSize() / self::RECIPES_BY_PAGE - 1);
+        $querySize = clone $query;
+        $paginationSize = (int)ceil($recipeRepository->GetSize($querySize) / self::RECIPES_BY_PAGE - 1);
         if ($paginationSize == 0) {
             $paginationSize = 1;
         }
 
-        return $this->render('home.html.twig', [
-            'currentPage' => $currentPage,
+        $query->setMaxResults(self::RECIPES_BY_PAGE)
+            ->setFirstResult(self::RECIPES_BY_PAGE * $pageIndex);
+
+        $exec = $query->getQuery()->execute();
+        //dump($query->getQuery()->execute());
+
+        //print($query->getQuery()->getSql());
+        return $this->render($twig, [
+            'currentPage' => $pageIndex,
             'paginationSize' => $paginationSize,
-            'recipesList' => $recipesList,
+            'recipesList' => $exec,
         ]);
     }
 
+    #[Route('/recipe/show/{id}', name: 'show_recipe', methods: ['GET'])]
+    public function show(Recipe $recipe): Response
+    {
+        return $this->render('recipe/showRecipe.html.twig', [
+            'recipe' => $recipe,
+        ]);
+    }
+
+    #[Route('/recipe/{action}Favorites/user:{userId};rid:{recipeId}', name: 'add_favorite_recipe', methods: ['GET'])]
+    public function addFavorites(string $action, int $userId, int $recipeId, RecipeRepository $recipeRepository, UserRepository $userRepository, EntityManagerInterface $entityManager): Response
+    {
+        $user = $userRepository->find($userId);
+
+        $favorites = $user->getFavorites();
+        if ($action === "remove") {
+            if (in_array($recipeId, $favorites)) {
+                $key = array_search($recipeId, $favorites);
+                unset($favorites[$key]);
+            }
+        } else {
+            $favorites[] = $recipeId;
+        }
+
+        $user->setFavorites($favorites);
+
+        $recipe = $recipeRepository->find($recipeId);
+        $entityManager->persist($recipe);
+        $entityManager->flush();
+
+        return $this->redirect('/recipe/show/' . $recipeId);
+    }
 
     #[Route('/recipe/new', name: 'new_recipe', methods: ['GET', 'POST'])]
     public function NewRecipe(Request $request, EntityManagerInterface $entityManager): Response
@@ -118,6 +156,10 @@ class RecipeController extends AbstractController
     }
 
     #[Route('/recipe/modify/{id}', name: 'modify_recipe', methods: ['GET', 'POST'])]
+    #[IsGranted(
+        attribute: new Expression('user.id === recipeId'),
+        recipeId: new Expression('args["post"].getAuthor()'),
+    )]
     public function ModifyRecipe(int $id, Request $request, EntityManagerInterface $entityManager): Response
     {
         $recipe = $entityManager->getRepository(Recipe::class)->find($id);
@@ -163,6 +205,10 @@ class RecipeController extends AbstractController
     }
 
     #[Route('/recipe/remove/{id}', name: 'remove_recipe', methods: ['GET', 'POST'])]
+    #[IsGranted(
+        attribute: new Expression('user.id === recipeId'),
+        recipeId: new Expression('args["post"].getAuthor()'),
+    )]
     public function RemoveRecipe(int $id, EntityManagerInterface $entityManager): Response
     {
         $recipe = $entityManager->getRepository(Recipe::class)->find($id);
@@ -176,14 +222,6 @@ class RecipeController extends AbstractController
             $entityManager->flush();
         }
 
-        return $this->redirectToRoute('home');
-    }
-
-    #[Route('/recipe/{id}', name: 'show_recipe', methods: ['GET'])]
-    public function show(Recipe $recipe): Response
-    {
-        return $this->render('recipe/showRecipe.html.twig', [
-            'recipe' => $recipe,
-        ]);
+        return $this->redirectToRoute('/recipe/user:' . $this->getUser()->getId());
     }
 }

@@ -1,10 +1,11 @@
-<a href={{ '/recipe/'~ recipe.getId()|trans }} class="card-link">
+<a href={{ '/recipe/show/'~ recipe.getId() }} class="card-link">
 	<div class="card">
 		<div class="container d-flex justify-content-center">
 			<img style="height:400px" class="img-fluid mx-auto" src={{ asset('Upload/Image/' ~ recipe.getImageName()) }} alt="Card image cap">
 		</div>
 		<div class="card-body">
 			<h5 class="card-title">{{ recipe.getTitle() }}</h5>
+			<h5 class="card-subtitle mb-2 text-muted">{{ recipe.getAuthor().getFirstname()}}</h5>
 			<h6 class="card-subtitle mb-2 text-muted">{{ recipe.getCategory().value}}</h6>
 			<p class="card-text">{{ recipe.getPreparation()}}</p>
 			<h6 class="card-text">

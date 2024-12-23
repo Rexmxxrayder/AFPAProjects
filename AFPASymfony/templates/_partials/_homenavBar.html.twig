@@ -11,7 +11,12 @@
 				</a>
 			</li>
 			<li class="nav-item active">
-				<a class="nav-link" href="/user/recipe">See Own Rexcipes
+				<a class="nav-link" href={{ '/recipe/search/p:0;user:' ~ app.user.id }}>See Own Rexcipes
+					<span class="sr-only"></span>
+				</a>
+			</li>
+			<li class="nav-item active">
+				<a class="nav-link" href={{ '/recipe/search/p:0;user:' ~ app.user.id }}>Favorites Rexcipes
 					<span class="sr-only"></span>
 				</a>
 			</li>
@@ -26,17 +31,17 @@
 	<input id="searchBar" style="width:200px" class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
 	<button class="btn btn-outline-success my-2 my-sm-0" onclick="SearchCards()">Search</button>
 	<script>
+
 		function SearchCards() {
 search = document.getElementById("searchBar").value;
-console.log(search);
 if (search == "") {
 return;
 }
 
 if (!isNaN(parseInt(search))) {
-document.location.href = '/recipe/p:0/td:' + search;
+document.location.href = '/recipe/p:0;td:' + search;
 } else {
-document.location.href = '/recipe/p:0/n:' + search;
+document.location.href = '/recipe/p:0;n:' + search;
 }
 }
 	</script>

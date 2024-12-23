@@ -44,8 +44,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @var Collection<int, Recipe>
      */
-    #[ORM\OneToMany(targetEntity: Recipe::class, mappedBy: 'Author', orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: Recipe::class, mappedBy: 'author', orphanRemoval: true)]
     private Collection $recipes;
+
+    #[ORM\Column]
+    private array $favorites = [];
 
     public function __construct()
     {
@@ -177,6 +180,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
                 $recipe->setAuthor(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getFavorites(): array
+    {
+        return $this->favorites;
+    }
+
+    public function setFavorites(array $favorites): static
+    {
+        $this->favorites = $favorites;
 
         return $this;
     }
