@@ -30,7 +30,7 @@ class RecipeController extends AbstractController
     #[Route(['/recipe/search/{parameters}'], name: 'recipeSpec',  defaults: ['parameters' => ''])]
     public function recipe(string $parameters, RecipeRepository $recipeRepository): Response
     {
-        preg_match_all('/([a-zA-Z0-9\-_]+):([a-zA-Z0-9\-_])(?=\;|$)/', $parameters, $matches);
+        preg_match_all('/([a-zA-Z0-9\-_]+)(?::([a-zA-Z0-9\-_]+))?(?=;|$)/', $parameters, $matches);
         $parametersArr = array_combine($matches[1], $matches[2]);
 
         $query = $recipeRepository->createQueryBuilder("recipe");
@@ -51,14 +51,15 @@ class RecipeController extends AbstractController
             $query = $recipeRepository->AddWhereAroundTotalDuration($query, intval($parametersArr['td']));
         }
 
-        if (array_key_exists("f", $parametersArr)) {
-            $query = $recipeRepository->AddWhereAroundTotalDuration($query, intval($parametersArr['td']));
-        }
 
         if (array_key_exists("n", $parametersArr)) {
             $query = $recipeRepository->AddWhereTitleLikeString($query, $parametersArr['n']);
         }
 
+        if (array_key_exists("f", $parametersArr)) {
+            $query = $recipeRepository->AddOnlyFavorite($this->getUser(), $query);
+            $twig = 'userFavoriteRecipe.html.twig';
+        }
 
         $querySize = clone $query;
         $paginationSize = (int)ceil($recipeRepository->GetSize($querySize) / self::RECIPES_BY_PAGE - 1);
@@ -156,10 +157,6 @@ class RecipeController extends AbstractController
     }
 
     #[Route('/recipe/modify/{id}', name: 'modify_recipe', methods: ['GET', 'POST'])]
-    #[IsGranted(
-        attribute: new Expression('user.id === recipeId'),
-        recipeId: new Expression('args["post"].getAuthor()'),
-    )]
     public function ModifyRecipe(int $id, Request $request, EntityManagerInterface $entityManager): Response
     {
         $recipe = $entityManager->getRepository(Recipe::class)->find($id);
@@ -205,10 +202,6 @@ class RecipeController extends AbstractController
     }
 
     #[Route('/recipe/remove/{id}', name: 'remove_recipe', methods: ['GET', 'POST'])]
-    #[IsGranted(
-        attribute: new Expression('user.id === recipeId'),
-        recipeId: new Expression('args["post"].getAuthor()'),
-    )]
     public function RemoveRecipe(int $id, EntityManagerInterface $entityManager): Response
     {
         $recipe = $entityManager->getRepository(Recipe::class)->find($id);
@@ -222,6 +215,6 @@ class RecipeController extends AbstractController
             $entityManager->flush();
         }
 
-        return $this->redirectToRoute('/recipe/user:' . $this->getUser()->getId());
+        return $this->redirect('/recipe/search/user:' . $this->getUser()->getId());
     }
 }

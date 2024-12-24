@@ -51,7 +51,11 @@ class RecipeRepository extends ServiceEntityRepository
 
     public function AddOnlyFavorite(User $user,QueryBuilder $qb): QueryBuilder
     {
-        $qb->andWhere($qb->expr()->in('recipe.id', $user->getFavorites()));
+        $arr = $user->getFavorites();
+        if(empty($arr)){
+            $arr[] = -1;
+        }
+        $qb->andWhere($qb->expr()->in('recipe.id', $arr));
         return $qb;
     }
 
