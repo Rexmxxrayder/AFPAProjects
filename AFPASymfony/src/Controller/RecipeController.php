@@ -7,6 +7,8 @@ use App\Repository\UserRepository;
 use App\Form\RecipeType;
 use App\Entity\Recipe;
 use App\Entity\User;
+use App\Entity\Commentary;
+use App\Form\CommentaryType;
 use Gedmo\Sluggable\Util\Urlizer;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;

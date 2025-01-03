@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\RecipeRating;
+use App\Entity\Recipe;
 use App\Form\RecipeRatingType;
 use App\Repository\RecipeRatingRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -25,21 +26,23 @@ final class RecipeRatingController extends AbstractController
     #[Route('/new', name: 'app_recipe_rating_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
-        $recipeRating = new RecipeRating();
-        $form = $this->createForm(RecipeRatingType::class, $recipeRating);
-        $form->handleRequest($request);
+        if ($request->isMethod('POST')) {
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($recipeRating);
-            $entityManager->flush();
-
-            return $this->redirectToRoute('app_recipe_rating_index', [], Response::HTTP_SEE_OTHER);
+            $recipeId = $request->request->get('Recipe');
+            $recipe = $entityManager->getRepository(Recipe::class)->find($recipeId);
+            if (!$this->getUser()->HaveAlreadyRateThisRecipe($recipe)) {
+                $rate = $request->request->get('rate');
+                $author = $this->getUser();
+                $recipeRating = new RecipeRating();
+                $recipeRating->setRate($rate);
+                $recipeRating->setRecipe($recipe);
+                $recipeRating->setAuthor($author);
+                $entityManager->persist($recipeRating);
+                $entityManager->flush();
+            }
         }
 
-        return $this->render('recipe_rating/new.html.twig', [
-            'recipe_rating' => $recipeRating,
-            'form' => $form,
-        ]);
+        return $this->redirect('/recipe/show/' . $request->request->get('Recipe'));
     }
 
     #[Route('/{id}', name: 'app_recipe_rating_show', methods: ['GET'])]
@@ -71,7 +74,7 @@ final class RecipeRatingController extends AbstractController
     #[Route('/{id}', name: 'app_recipe_rating_delete', methods: ['POST'])]
     public function delete(Request $request, RecipeRating $recipeRating, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$recipeRating->getId(), $request->getPayload()->getString('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $recipeRating->getId(), $request->getPayload()->getString('_token'))) {
             $entityManager->remove($recipeRating);
             $entityManager->flush();
         }

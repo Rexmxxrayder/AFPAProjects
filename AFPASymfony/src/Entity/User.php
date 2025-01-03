@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints\Length;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
@@ -268,5 +269,27 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         }
 
         return $this;
+    }
+
+    public function HaveAlreadyRateThisRecipe(Recipe $recipe){
+        $rates = $this->getRecipeRatings();
+        foreach ($rates as $rate) {
+            if($rate->getRecipe()->getId() == $recipe->getId()){
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function GetRate(Recipe $recipe){
+        $rates = $this->getRecipeRatings();
+        foreach ($rates as $rate) {
+            if($rate->getRecipe()->getId() == $recipe->getId()){
+                return $rate->getRate();
+            }
+        }
+
+        return 0;
     }
 }

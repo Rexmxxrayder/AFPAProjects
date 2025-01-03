@@ -25,6 +25,9 @@ class Commentary
     #[ORM\Column(type: Types::DATETIMETZ_MUTABLE)]
     private ?\DateTimeInterface $PostedDate = null;
 
+    #[ORM\Column(type: Types::TEXT)]
+    private ?string $comment = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -62,6 +65,18 @@ class Commentary
     public function setPostedDate(\DateTimeInterface $PostedDate): static
     {
         $this->PostedDate = $PostedDate;
+
+        return $this;
+    }
+
+    public function getComment(): ?string
+    {
+        return $this->comment;
+    }
+
+    public function setComment(string $comment): static
+    {
+        $this->comment = $comment;
 
         return $this;
     }

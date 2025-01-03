@@ -4,7 +4,7 @@
 {% set currentPage = (currentPage < 1) ? 1 : (currentPage > paginationSize) ? paginationSize : currentPage %}
 {% set min = ((currentPage - paginationMiddleSize - 1) < 1) ? 1 : ((currentPage) > paginationSize - paginationMiddleSize) ? paginationSize - paginationMiddleSize : currentPage %}
 {% set max = ((min + paginationMiddleSize) > paginationSize) ? paginationSize : min + paginationMiddleSize %}
-<div class="container sticky-bottom pt-3 pb-1">
+<div class="container sticky-bottom pb-1">
 	<nav aria-label="...">
 		<ul class="pagination justify-content-center">
 			{% if currentPage != 1 %}

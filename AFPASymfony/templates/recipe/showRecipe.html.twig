@@ -72,18 +72,43 @@
 
 		{% endif %}
 
-		{% if app.user %}
-			<form>
-				<div class="form-group mt-3 mb-3">
-					<textarea class="form-control" id="textArea" rows="3"></textarea>
-				</div>
-				<button type="submit" class="btn btn-primary">Add Commentary
-				</button>
-			</form>
+		{% if app.user and not app.user.HaveAlreadyRateThisRecipe(recipe) %}
+			<form action='/recipe/rating/new' method='POST'>
 
+								<div class="form-group mt-3 mb-3">
+					<input type="number" class="form-control" name="rate" min='0' max='5' ></input>
+				</div>
+				<button type="submit" class="btn btn-primary">Give Rate
+				</button>
+				<input type="hidden" id="custId" name="Recipe" value={{ recipe.getId() }}>
+			</form>
+		{% else %}
+			<p class="text-left text-info">{{ "You Rate This Rexcipe : " ~ app.user.GetRate(recipe) }}</p>
 		{% endif %}
 
+		{% if app.user %}
+			<form action='/commentary/new' method='POST'>
+				<div class="form-group mt-3 mb-3">
+					<textarea class="form-control" id="textArea" name="comment" rows="3"></textarea>
+				</div>
+				<button type="submit" class="btn btn-primary">Add Comment
+				</button>
+				<input type="hidden" name="Recipe" value={{ recipe.getId() }}>
+			</form>
+		{% endif %}
 
+		<table class="table">
+			<tbody>
+				{% for commentary in recipe.getCommentaries() %}
+					<tr>
+						<th>{{ commentary.getAuthor().getFirstName() }}</th>
+					</tr>
+					<tr>
+						<td>{{ commentary.getComment() }}</td>
+					</tr>
+				{% endfor %}
+			</tbody>
+		</table>
 	</div>
 
 {% endblock %}

@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Commentary;
+use App\Entity\Recipe;
 use App\Form\CommentaryType;
 use App\Repository\CommentaryRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -22,24 +23,24 @@ final class CommentaryController extends AbstractController
         ]);
     }
 
-    #[Route('/new', name: 'app_commentary_new', methods: ['GET', 'POST'])]
+    #[Route('/new', name: 'app_commentary_new', methods: ['POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
-        $commentary = new Commentary();
-        $form = $this->createForm(CommentaryType::class, $commentary);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
+        if ($request->isMethod('POST')) {
+            $comment = $request->request->get('comment');
+            $recipeId = $request->request->get('Recipe');
+            $recipe = $entityManager->getRepository(Recipe::class)->find($recipeId);
+            $author = $this->getUser();
+            $commentary = new Commentary();
+            $commentary->setComment($comment);
+            $commentary->setRecipe($recipe);
+            $commentary->setAuthor($author);
+            $commentary->setPostedDate(new \DateTime('now', new \DateTimeZone('UTC')));
             $entityManager->persist($commentary);
             $entityManager->flush();
-
-            return $this->redirectToRoute('app_commentary_index', [], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('commentary/new.html.twig', [
-            'commentary' => $commentary,
-            'form' => $form,
-        ]);
+        return $this->redirect('/recipe/show/' . $request->request->get('Recipe'));
     }
 
     #[Route('/{id}', name: 'app_commentary_show', methods: ['GET'])]
@@ -68,10 +69,10 @@ final class CommentaryController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_commentary_delete', methods: ['POST'])]
+    #[Route('/{id}/delete', name: 'app_commentary_delete', methods: ['POST'])]
     public function delete(Request $request, Commentary $commentary, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$commentary->getId(), $request->getPayload()->getString('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $commentary->getId(), $request->getPayload()->getString('_token'))) {
             $entityManager->remove($commentary);
             $entityManager->flush();
         }
