@@ -49,15 +49,16 @@ class AppFixtures extends Fixture
         $recipes = [];
         for ($i = 0; $i < 200; $i++) {
             $recipes[$i] = new Recipe();
-            $recipes[$i]->setTitle("Ptit Burger" . $i);
-            $recipes[$i]->setDescription("Ilé bon le gerbur");
-            $recipes[$i]->setIngredients("1 steak, 2 bread, ketchup");
-            $recipes[$i]->setPreparation("cookthe steak then : \n bread \n ketchu^p \n steak \n bread");
-            $recipes[$i]->setPreparationTime(2);
-            $recipes[$i]->setCookingTime(10);
-            $recipes[$i]->setImageName(rand(0, 1) == 1 ? 'images.jfif' : 'Smash-Burger.png');
-            $recipes[$i]->setCategory(RecipeCategory::Dessert);
-            $recipes[$i]->setAuthor(rand(0, 1) == 1 ? $user : $user2);
+            $isBurger = rand(0,1) == 0;
+            $recipes[$i]->setTitle(($isBurger ? "Ptit Burger" : "Big La Sagne"). $i);
+            $recipes[$i]->setDescription($isBurger ? "Ilé bon le gerbur" : "La Sagne");
+            $recipes[$i]->setIngredients($isBurger ? "1 steak, 2 bread, ketchup" : "1Kg Pasta, 1Kg horse, 1Kg Tomato, 1KG Salt");
+            $recipes[$i]->setPreparation($isBurger ? "cook the steak then : \n bread \n ketchu^p \n steak \n bread" : "Mix all ingredients");
+            $recipes[$i]->setPreparationTime(rand(10,50));
+            $recipes[$i]->setCookingTime(rand(10,50));
+            $recipes[$i]->setImageName($isBurger ? 'Smash-Burger.png' : 'Lasagna.jpg');
+            $recipes[$i]->setCategory(RecipeCategory::cases()[array_rand(RecipeCategory::cases())]);
+            $recipes[$i]->setAuthor(rand(0, 1) == 1  ? $user : $user2);
             $recipes[$i]->setPrivate(rand(0, 1));
             $manager->persist($recipes[$i]);
         }

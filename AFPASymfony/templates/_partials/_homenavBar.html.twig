@@ -1,82 +1,74 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-	<a class="navbar-brand" href="/">Rexcipes</a>
-</button>
+<div class="container-fluid">
+	<nav class="navbar navbar-expand-lg navbar-light bg-light">
+		<a class="navbar-brand" href="/">Rexcipes</a>
 
-<div class="collapse navbar-collapse" id="navbarSupportedContent">
-	<ul class="navbar-nav mr-auto">
-		{% if app.user %}
-			<li class="nav-item active">
-				<a class="nav-link" href="/recipe/new">Create Rexcipes
-					<span class="sr-only"></span>
-				</a>
-			</li>
-			<li class="nav-item active">
-				<a class="nav-link" href={{ '/recipe/search/p:0;user:' ~ app.user.id }}>See Own Rexcipes
-					<span class="sr-only"></span>
-				</a>
-			</li>
-			<li class="nav-item active">
-				<a class="nav-link" href={{ '/recipe/search/p:0;user:' ~ app.user.id ~ ';f' }}>Favorites Rexcipes
-					<span class="sr-only"></span>
-				</a>
-			</li>
-			{% if is_granted('ROLE_ADMIN') %}
-				<li class="nav-item active">
-					<a class="nav-link" href={{ '/admin' }}>User Dashboard
-						<span class="sr-only"></span>
-					</a>
-				</li>
-			{% endif %}
-		{% endif %}
-	</ul>
-	{% if app.user %}
-		<div>{{ 'Hello ' ~ app.user.getFirstname()|capitalize }}<span class="sr-only"></span>
+		<div class="collapse navbar-collapse" id="navbarSupportedContent">
+			<ul class="navbar-nav me-auto">
+				{% if app.user %}
+					<li class="nav-item active">
+						<a class="nav-link" href="/recipe/new">Create Rexcipes
+						</a>
+					</li>
+					<li class="nav-item active">
+						<a class="nav-link" href={{ '/recipe/search/p:0;user:' ~ app.user.id }}>See Own Rexcipes
+						</a>
+					</li>
+					<li class="nav-item active">
+						<a class="nav-link" href={{ '/recipe/search/p:0;user:' ~ app.user.id ~ ';f' }}>Favorites Rexcipes
+						</a>
+					</li>
+					{% if is_granted('ROLE_ADMIN') %}
+						<li class="nav-item active">
+							<a class="nav-link" href={{ '/admin' }}>User Dashboard
+							</a>
+						</li>
+					{% endif %}
+				{% endif %}
+			</ul>
+			<ul class="navbar-nav">
+				{% if app.user %}
+					<span class="navbar-text text-primary fw-bold">{{ 'Hello ' ~ app.user.getFirstname()|capitalize }}</span>
+					<lu class="navbar-nav">
+						<li class="nav-item active">
+							<a class="nav-link" href="/logout">Logout
+							</a>
+						</li>
+					</lu>
+				{% endif %}
+				<input id="searchBar" style="width:200px" class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+				<div class="btn-group">
+					<button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+						Search
+					</button>
+					<ul class="dropdown-menu dropdown-menu-lg-end">
+						<li>
+							<a class="dropdown-item" onclick="SearchCards('n')">Name</a>
+						</li>
+						<li>
+							<a class="dropdown-item" onclick="SearchCards('i')">Ingredient</a>
+						</li>
+						<li>
+							<a class="dropdown-item" onclick="SearchCards('td')">Total Duration</a>
+						</li>
+						<li>
+							<a class="dropdown-item" onclick="SearchCards('c')">Category</a>
+						</li>
+					</ul>
+				</div>
+			</ul>
+
 		</div>
-		<a class="nav-link" href="/logout">Logout<span class="sr-only"></span>
-		</a>
-	{% endif %}
-	<input id="searchBar" style="width:200px" class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-	<button class="btn btn-outline-success my-2 my-sm-0" onclick="SearchCards()">Search</button>
-	<div class="input-group mb-3">
-  <div class="input-group-prepend">
-    <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Dropdown</button>
-    <div class="dropdown-menu">
-      <a class="dropdown-item" href="#">Action</a>
-      <a class="dropdown-item" href="#">Another action</a>
-      <a class="dropdown-item" href="#">Something else here</a>
-      <div role="separator" class="dropdown-divider"></div>
-      <a class="dropdown-item" href="#">Separated link</a>
-    </div>
-  </div>
-  <input type="text" class="form-control" aria-label="Text input with dropdown button">
+	</nav>
 </div>
 
-<div class="input-group">
-  <input type="text" class="form-control" aria-label="Text input with dropdown button">
-  <div class="input-group-append">
-    <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Dropdown</button>
-    <div class="dropdown-menu">
-      <a class="dropdown-item" href="#">Category</a>
-      <a class="dropdown-item" href="#">Another action</a>
-      <a class="dropdown-item" href="#">Something else here</a>
-      <div role="separator" class="dropdown-divider"></div>
-      <a class="dropdown-item" href="#">Separated link</a>
-    </div>
-  </div>
-</div>
-	<script>
+<script>
 
-		function SearchCards() {
+	function SearchCards(type) {
 search = document.getElementById("searchBar").value;
 if (search == "") {
 return;
 }
 
-if (!isNaN(parseInt(search))) {
-document.location.href = '/recipe/p:0;td:' + search;
-} else {
-document.location.href = '/recipe/p:0;n:' + search;
+document.location.href = '/recipe/search/p:0;' + type + ':' + search;
 }
-}
-	</script>
-</div></nav>
+</script>

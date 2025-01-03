@@ -7,11 +7,13 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Email;
 
 class SecurityController extends AbstractController
 {
     #[Route(path: ['/'], name: 'home')]
-    public function lSoginOrRexcipes(): Response
+    public function loginOrRexcipes(): Response
     {
         if ($this->getUser()) {
             return $this->redirectToRoute('recipe');
@@ -42,24 +44,20 @@ class SecurityController extends AbstractController
     }
 
     #[Route(path: ['/resetPassword'], name: 'app_reset_Password', methods: ['GET', 'POST'])]
-    public function resetPassword(Request $request): Response
-    { {
-            $formData = [
-                'email' => '',
-            ];
+    public function index(Request $request, MailerInterface $mailer): Response
+    {
+        $emailAdress = $request->request->get('email');
+        if ($emailAdress) {
+            $email = (new Email())
+                ->from('raptor.rexmxxrayder@gmail.com') // Adresse e-mail de l'expéditeur
+                ->to($emailAdress)
+                ->subject("Mon premierMail avec symfony") // Objet du message
+                ->text("ceci est un email envoyé via symfony");
 
-            $form = $this->createFormBuilder($formData)->getForm();
-
-            $form->handleRequest($request);
-
-            if ($form->isSubmitted() && $form->isValid()) {
-                $data = $form->getData();
-                
-
-                return $this->redirectToRoute('login');
-            }
-
-            return $this->render('security/resetPassword.html.twig');
+            $mailer->send($email);
+            return $this->redirectToRoute('app_login');
         }
+
+        return $this->render('security/resetPassword.html.twig');
     }
 }

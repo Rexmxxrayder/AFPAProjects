@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}RecipeRating index{% endblock %}
+
+{% block body %}
+    <h1>RecipeRating index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Rate</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for recipe_rating in recipe_ratings %}
+            <tr>
+                <td>{{ recipe_rating.id }}</td>
+                <td>{{ recipe_rating.rate }}</td>
+                <td>
+                    <a href="{{ path('app_recipe_rating_show', {'id': recipe_rating.id}) }}">show</a>
+                    <a href="{{ path('app_recipe_rating_edit', {'id': recipe_rating.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="3">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_recipe_rating_new') }}">Create new</a>
+{% endblock %}

@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use App\Enum\RecipeCategory;
 use App\Repository\RecipeRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -45,6 +47,24 @@ class Recipe
 
     #[ORM\Column]
     private ?bool $isPrivate = null;
+
+    /**
+     * @var Collection<int, Commentary>
+     */
+    #[ORM\OneToMany(targetEntity: Commentary::class, mappedBy: 'Recipe', orphanRemoval: true)]
+    private Collection $commentaries;
+
+    /**
+     * @var Collection<int, RecipeRating>
+     */
+    #[ORM\OneToMany(targetEntity: RecipeRating::class, mappedBy: 'Recipe', orphanRemoval: true)]
+    private Collection $rates;
+
+    public function __construct()
+    {
+        $this->commentaries = new ArrayCollection();
+        $this->rates = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -167,6 +187,66 @@ class Recipe
     public function setPrivate(bool $isPrivate): static
     {
         $this->isPrivate = $isPrivate;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Commentary>
+     */
+    public function getCommentaries(): Collection
+    {
+        return $this->commentaries;
+    }
+
+    public function addCommentary(Commentary $commentary): static
+    {
+        if (!$this->commentaries->contains($commentary)) {
+            $this->commentaries->add($commentary);
+            $commentary->setRecipe($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCommentary(Commentary $commentary): static
+    {
+        if ($this->commentaries->removeElement($commentary)) {
+            // set the owning side to null (unless already changed)
+            if ($commentary->getRecipe() === $this) {
+                $commentary->setRecipe(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, RecipeRating>
+     */
+    public function getRates(): Collection
+    {
+        return $this->rates;
+    }
+
+    public function addRate(RecipeRating $rate): static
+    {
+        if (!$this->rates->contains($rate)) {
+            $this->rates->add($rate);
+            $rate->setRecipe($this);
+        }
+
+        return $this;
+    }
+
+    public function removeRate(RecipeRating $rate): static
+    {
+        if ($this->rates->removeElement($rate)) {
+            // set the owning side to null (unless already changed)
+            if ($rate->getRecipe() === $this) {
+                $rate->setRecipe(null);
+            }
+        }
 
         return $this;
     }

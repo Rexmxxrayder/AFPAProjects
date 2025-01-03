@@ -30,14 +30,13 @@ class RecipeController extends AbstractController
     #[Route(['/recipe/search/{parameters}'], name: 'recipeSpec',  defaults: ['parameters' => ''])]
     public function recipe(string $parameters, RecipeRepository $recipeRepository): Response
     {
-        preg_match_all('/([a-zA-Z0-9\-_]+)(?::([a-zA-Z0-9\-_]+))?(?=;|$)/', $parameters, $matches);
+        preg_match_all('/([a-zA-Z0-9\-_%]+)(?::([a-zA-Z0-9\-_%]+(?:%[0-9A-Fa-f]{2})*))?/', $parameters, $matches);
         $parametersArr = array_combine($matches[1], $matches[2]);
 
         $query = $recipeRepository->createQueryBuilder("recipe");
         $query->where('true = true');
 
         $pageIndex = array_key_exists("p", $parametersArr) ? intval($parametersArr["p"]) : 0;
-
         if (array_key_exists("user", $parametersArr)) {
             $twig = 'userRecipe.html.twig';
             $query = $recipeRepository->AddWhereAuthorIsUser($query, $parametersArr['user']);
@@ -53,7 +52,15 @@ class RecipeController extends AbstractController
 
 
         if (array_key_exists("n", $parametersArr)) {
-            $query = $recipeRepository->AddWhereTitleLikeString($query, $parametersArr['n']);
+            $query = $recipeRepository->AddWhereTitleLikeString($query, urldecode($parametersArr['n']));
+        }
+
+        if (array_key_exists("i", $parametersArr)) {
+            $query = $recipeRepository->AddWhereContainsIngredient($query, urldecode($parametersArr['i']));
+        }
+
+        if (array_key_exists("c", $parametersArr)) {
+            $query = $recipeRepository->AddWhereIsCategory($query, urldecode($parametersArr['c']));
         }
 
         if (array_key_exists("f", $parametersArr)) {

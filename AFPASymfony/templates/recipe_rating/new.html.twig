@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New RecipeRating{% endblock %}
+
+{% block body %}
+    <h1>Create new RecipeRating</h1>
+
+    {{ include('recipe_rating/_form.html.twig') }}
+
+    <a href="{{ path('app_recipe_rating_index') }}">back to list</a>
+{% endblock %}

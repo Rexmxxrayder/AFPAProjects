@@ -26,6 +26,20 @@ class RecipeRepository extends ServiceEntityRepository
         return $qb;
     }
 
+    public function AddWhereContainsIngredient(QueryBuilder $qb, string $string): QueryBuilder
+    {
+        $qb->andWhere("recipe.ingredients LIKE :string")
+            ->setParameter("string", '%' . $string . '%');
+        return $qb;
+    }
+
+    public function AddWhereIsCategory(QueryBuilder $qb, string $string): QueryBuilder
+    {
+        $qb->andWhere("recipe.category LIKE :string")
+            ->setParameter("string", '%' . $string . '%');
+        return $qb;
+    }
+
     public function AddWhereAroundTotalDuration(QueryBuilder $qb, int $totalDuration): QueryBuilder
     {
         $high = $totalDuration + 5;

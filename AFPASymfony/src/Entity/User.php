@@ -50,9 +50,23 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private array $favorites = [];
 
+    /**
+     * @var Collection<int, Commentary>
+     */
+    #[ORM\OneToMany(targetEntity: Commentary::class, mappedBy: 'Author')]
+    private Collection $commentaries;
+
+    /**
+     * @var Collection<int, RecipeRating>
+     */
+    #[ORM\OneToMany(targetEntity: RecipeRating::class, mappedBy: 'Author', orphanRemoval: true)]
+    private Collection $recipeRatings;
+
     public function __construct()
     {
         $this->recipes = new ArrayCollection();
+        $this->commentaries = new ArrayCollection();
+        $this->recipeRatings = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -192,6 +206,66 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setFavorites(array $favorites): static
     {
         $this->favorites = $favorites;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Commentary>
+     */
+    public function getCommentaries(): Collection
+    {
+        return $this->commentaries;
+    }
+
+    public function addCommentary(Commentary $commentary): static
+    {
+        if (!$this->commentaries->contains($commentary)) {
+            $this->commentaries->add($commentary);
+            $commentary->setAuthor($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCommentary(Commentary $commentary): static
+    {
+        if ($this->commentaries->removeElement($commentary)) {
+            // set the owning side to null (unless already changed)
+            if ($commentary->getAuthor() === $this) {
+                $commentary->setAuthor(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, RecipeRating>
+     */
+    public function getRecipeRatings(): Collection
+    {
+        return $this->recipeRatings;
+    }
+
+    public function addRecipeRating(RecipeRating $recipeRating): static
+    {
+        if (!$this->recipeRatings->contains($recipeRating)) {
+            $this->recipeRatings->add($recipeRating);
+            $recipeRating->setAuthor($this);
+        }
+
+        return $this;
+    }
+
+    public function removeRecipeRating(RecipeRating $recipeRating): static
+    {
+        if ($this->recipeRatings->removeElement($recipeRating)) {
+            // set the owning side to null (unless already changed)
+            if ($recipeRating->getAuthor() === $this) {
+                $recipeRating->setAuthor(null);
+            }
+        }
 
         return $this;
     }
