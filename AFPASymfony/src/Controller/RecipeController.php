@@ -30,18 +30,24 @@ class RecipeController extends AbstractController
     }
 
     #[Route(['/recipe/search/{parameters}'], name: 'recipeSpec',  defaults: ['parameters' => ''])]
-    public function recipe(string $parameters, RecipeRepository $recipeRepository): Response
+    public function recipe(string $parameters, RecipeRepository $recipeRepository, UserRepository $userRepository): Response
     {
         preg_match_all('/([a-zA-Z0-9\-_%]+)(?::([a-zA-Z0-9\-_%]+(?:%[0-9A-Fa-f]{2})*))?/', $parameters, $matches);
         $parametersArr = array_combine($matches[1], $matches[2]);
 
         $query = $recipeRepository->createQueryBuilder("recipe");
-        $query->where('true = true');
-
+        $query->leftJoin('recipe.rates', 'rr');
+        $query->leftJoin('recipe.commentaries', 'rc');
+        $query->select('recipe','AVG(rr.rate) AS average_rate', 'COUNT(rc) AS sum_comment', '(AVG(rr.rate)) + (COUNT(rc))');
+        $query->where('1 = 1');
+        $query->groupBy('recipe.id');
+        
+        $user = $this->getUser();
         $pageIndex = array_key_exists("p", $parametersArr) ? intval($parametersArr["p"]) : 0;
         if (array_key_exists("user", $parametersArr)) {
             $twig = 'userRecipe.html.twig';
             $query = $recipeRepository->AddWhereAuthorIsUser($query, $parametersArr['user']);
+            $user = $userRepository->find($parametersArr['user']);
         } else {
             $twig = 'recipe.html.twig';
             $query = $recipeRepository->AddWhereRecipeNotPrivate($query);
@@ -50,6 +56,10 @@ class RecipeController extends AbstractController
 
         if (array_key_exists("td", $parametersArr)) {
             $query = $recipeRepository->AddWhereAroundTotalDuration($query, intval($parametersArr['td']));
+        }
+
+        if (array_key_exists("mp", $parametersArr)) {
+            $query = $recipeRepository->OrderByMostPopular($query);
         }
 
 
@@ -81,12 +91,20 @@ class RecipeController extends AbstractController
 
         $exec = $query->getQuery()->execute();
         //dump($query->getQuery()->execute());
-
         //print($query->getQuery()->getSql());
+
+        $recipesList = array();
+        foreach($exec as $recipeplusavg){
+            $recipe = $recipeplusavg[0];
+            $recipesList[] = $recipe;
+        }
+
+        //dump($recipesList);
         return $this->render($twig, [
             'currentPage' => $pageIndex,
             'paginationSize' => $paginationSize,
-            'recipesList' => $exec,
+            'recipesList' => $recipesList,
+            'userPage' => $user,
         ]);
     }
 
@@ -224,6 +242,6 @@ class RecipeController extends AbstractController
             $entityManager->flush();
         }
 
-        return $this->redirect('/recipe/search/user:' . $this->getUser()->getId());
+        return $this->redirect('/recipe/search/user:' . $recipe->getAuthor()->getId());
     }
 }

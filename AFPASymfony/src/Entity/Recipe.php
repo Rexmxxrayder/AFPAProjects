@@ -250,4 +250,17 @@ class Recipe
 
         return $this;
     }
+
+    public function getAverageRate(): float
+    {
+        if(count($this->getRates()) == 0){
+            return -1;
+        }
+
+        $avgRate = 0;
+        foreach($this->getRates() as $rate){
+            $avgRate += $rate->getRate();
+        }
+        return $avgRate / count($this->getRates());
+    }
 }

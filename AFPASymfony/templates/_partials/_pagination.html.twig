@@ -1,13 +1,18 @@
 {% set paginationMiddleSize = 4 %}
 {% set currentPage = currentPage + 1 %}
 {% set paginationSize = paginationSize == 1 ? 1 : paginationSize + 1 %}
-{% set currentPage = (currentPage < 1) ? 1 : (currentPage > paginationSize) ? paginationSize : currentPage %}
+{{ currentPage }}
+{{ paginationSize }}
+{% set currentPage = (currentPage < 1) ? 1 : (currentPage > paginationSize) ? (paginationSize == 0 ? 1 : paginationSize): currentPage %}
 {% set min = ((currentPage - paginationMiddleSize - 1) < 1) ? 1 : ((currentPage) > paginationSize - paginationMiddleSize) ? paginationSize - paginationMiddleSize : currentPage %}
-{% set max = ((min + paginationMiddleSize) > paginationSize) ? paginationSize : min + paginationMiddleSize %}
+{% set max = ((min + paginationMiddleSize) > paginationSize) ? (paginationSize == 0 ? min : paginationSize): min + paginationMiddleSize %}
+{{ currentPage }}
+{{ min }}
+{{ max }}
 <div class="container sticky-bottom pb-1">
 	<nav aria-label="...">
 		<ul class="pagination justify-content-center">
-			{% if currentPage != 1 %}
+			{% if currentPage > 1 %}
 				<li class="page-item">
 					<a role="button" class="page-link text-primary" onclick="ChangePage({{ currentPage - 2}})">Previous</a>
 				</li>
@@ -27,7 +32,7 @@
 					<a role="button" class="page-link text-primary" onclick="ChangePage({{ paginationSize - 1}})">{{paginationSize}}</a>
 				</li>
 			{% endif %}
-			{% if currentPage != paginationSize %}
+			{% if currentPage <= paginationSize and paginationSize > 1 %}
 				<li class="page-item">
 					<a role="button" class="page-link text-primary" onclick="ChangePage({{ currentPage}})" >Next</a>
 				</li>

@@ -50,6 +50,12 @@ class RecipeRepository extends ServiceEntityRepository
         return $qb;
     }
 
+    public function OrderByMostPopular(QueryBuilder $qb): QueryBuilder
+    {
+        $qb->addOrderBy('(AVG(rr.rate)) + (COUNT(rc))', 'DESC');
+        return $qb;
+    }
+
     public function AddWhereAuthorIsUser(QueryBuilder $qb, int $userId): QueryBuilder
     {
         $qb->andWhere("recipe.author = :userId")
@@ -74,7 +80,7 @@ class RecipeRepository extends ServiceEntityRepository
     }
 
     public function GetSize(QueryBuilder $qb) : int {
-        $qb->select('count(recipe)');
-        return $qb->getQuery()->getResult()[0]['1'];
+          //dump($qb->getQuery()->getResult());
+        return count($qb->getQuery()->getResult());
     }
 }

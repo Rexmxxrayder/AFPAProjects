@@ -1,9 +1,10 @@
-{% extends 'baseSystem.html.twig' %}
+{% extends 'base.html.twig' %}
 {% block title %}Home Page
 {% endblock %}
 {% block body %}
 	<div class="container-fluid">
-		<h1>{{app.user.getFirstname() ~ ' Rexcipes'}}</h1>
+		<h1>{{userPage.firstName ~ ' Rexcipes'}}</h1>
+		<h5>{{userPage.firstName ~ " publish " ~ recipesList|length ~ " Rexcipes" }}</h5>
 		<div class="row">
 			{% for recipe in recipesList %}
 				<div class="col-12 col-md-6 col-lg-4 col-xl-3 mt-3">

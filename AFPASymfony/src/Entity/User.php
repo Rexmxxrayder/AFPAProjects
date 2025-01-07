@@ -54,7 +54,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @var Collection<int, Commentary>
      */
-    #[ORM\OneToMany(targetEntity: Commentary::class, mappedBy: 'Author')]
+    #[ORM\OneToMany(targetEntity: Commentary::class, mappedBy: 'Author',  orphanRemoval: true)]
     private Collection $commentaries;
 
     /**
@@ -281,6 +281,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
         return false;
     }
+
+    public function HaveAlreadyCommentThisRecipe(Recipe $recipe){
+        $comments = $this->getCommentaries();
+        foreach ($comments as $comment) {
+            if($comment->getRecipe()->getId() == $recipe->getId()){
+                return true;
+            }
+        }
+
+        return false;
+    }
+
 
     public function GetRate(Recipe $recipe){
         $rates = $this->getRecipeRatings();
