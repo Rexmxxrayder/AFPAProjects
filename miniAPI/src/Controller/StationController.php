@@ -12,13 +12,14 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 
+#[Route('/api')]
 class StationController extends AbstractController
 {
     #[Route('/station', name: 'stations', methods: ['GET'])]
     public function getStations(StationRepository $sr): JsonResponse
     {
         $stations = $sr->findAll();
-        return $this->json($stations);
+        return $this->json($stations, 200, [], ['groups' => 'Station:read']);
     }
 
     #[Route('/station', name: 'add_station', methods: ['POST'])]
@@ -42,7 +43,7 @@ class StationController extends AbstractController
         return $this->json($station);
     }
 
-    #[Route('/Station/{id}', name: 'update_station', methods: ['PUT'])]
+    #[Route('/station/{id}', name: 'update_station', methods: ['PUT'])]
 
     public function updateStation(string $id, StationRepository $for, Request $request, SerializerInterface $serializer, EntityManagerInterface $em): JsonResponse
     {
@@ -56,7 +57,7 @@ class StationController extends AbstractController
         return $this->json($station);
     }
 
-    #[Route('/Station/{id}', name: 'delete_station', methods: ['DELETE'])]
+    #[Route('/station/{id}', name: 'delete_station', methods: ['DELETE'])]
 
     public function deleteStation(string $id, StationRepository $for, EntityManagerInterface $em): JsonResponse
     {

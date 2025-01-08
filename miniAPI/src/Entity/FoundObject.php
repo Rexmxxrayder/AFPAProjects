@@ -14,23 +14,23 @@ class FoundObject
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(["Station:read ", "FoundObject:read"])]
+    #[Groups(["Station:read", "FoundObject:read"])]
     private ?int $id = null;
     
     #[ORM\Column(type: Types::TEXT)]
-    #[Groups(["Station:read ", "FoundObject:read"])]
+    #[Groups(["Station:read", "FoundObject:read"])]
     private ?string $description = null;
     
     #[ORM\Column(type: Types::TEXT)]
-    #[Groups(["Station:read ", "FoundObject:read"])]
+    #[Groups(["Station:read", "FoundObject:read"])]
     private ?string $localisation = null;
     
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    #[Groups(["Station:read ", "FoundObject:read"])]
+    #[Groups(["Station:read", "FoundObject:read"])]
     private ?\DateTimeInterface $reportDate = null;
     
     #[ORM\Column(enumType: ObjectStatusEnum::class)]
-    #[Groups(["Station:read ", "FoundObject:read"])]
+    #[Groups(["Station:read", "FoundObject:read"])]
     private ObjectStatusEnum $status = ObjectStatusEnum::Found;
     
     #[ORM\ManyToOne(inversedBy: 'foundObjects')]

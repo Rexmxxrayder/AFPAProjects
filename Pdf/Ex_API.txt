@@ -1,0 +1,43 @@
+Ce projet a pour objectif de développer une API REST avec Symfony 6,
+pour la gestion des objets trouvés dans une gare.L'API permettra aux usagers de signaler des objets perdus,
+de les cataloguer, et de faciliter leur récupération.
+Le développement sera accompagné de tests unitaires avec WebTestCase pour garantir la fiabilité des fonctionnalités.
+
+1 Mettez en place un nouveau projet Symfony 6 en excluant l'authentification JWT.
+
+2 Modèle de données :
+   -   ObjetTrouvé :
+     - id : Identifiant unique de l'objet trouvé.
+     - description : Description détaillée de l'objet.
+     - localisation : Localisation précise où l'objet a été trouvé dans la gare.
+     - dateSignalement : Date et heure du signalement de l'objet trouvé.
+     - statut : Statut de l'objet (trouvé, en attente de récupération, récupéré, etc.).
+   - Usager :
+     - id : Identifiant unique de l'usager.
+     - nom : Nom de l'usager.
+     - prenom : Prénom de l'usager.
+     - email : Adresse e-mail de l'usager.
+     - numeroTelephone : Numéro de téléphone de l'usager.
+   -  Gare :
+     - id : Identifiant unique de la gare.
+     - nom : Nom de la gare.
+     - localisation : Localisation de la gare.
+
+2.bis Fixtures :
+
+  - Utilisez des fixtures pour générer des données de test représentant différents objets trouvés dans une gare, usagers, et gares.
+
+3 Services et Contrôleurs :
+
+  - Implémentez des services et des contrôleurs pour les opérations CRUD sur les entités liées aux objets trouvés, aux usagers, et aux gares.
+
+
+4 Fonctionnalités de Recherche :
+   -  Recherche d'Objets Trouvés :
+     - Par Localisation : Permet aux usagers de rechercher les objets trouvés dans une gare en fonction de la localisation précise.
+     - Par Date :  Facilite la recherche d'objets trouvés en spécifiant une plage de dates.
+     - Par Statut : Permet de filtrer les objets trouvés en fonction de leur statut (trouvé, en attente de récupération, récupéré, etc.).
+   -  Recherche d'Usagers :
+     -  Par Nom et Prénom : Facilite la recherche d'usagers en fonction de leur nom et prénom.
+     -  Par Adresse E-mail : Permet de trouver des usagers en utilisant leur adresse e-mail.
+     -  Par Numéro de Téléphone : Facilite la recherche d'usagers en utilisant leur numéro de téléphone.

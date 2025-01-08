@@ -13,6 +13,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 
+#[Route('/api')]
 class FoundObjectController extends AbstractController
 {
     #[Route('/found/object', name: 'found_objects', methods: ['GET'])]
@@ -27,7 +28,14 @@ class FoundObjectController extends AbstractController
     {
         $jsonData = $request->getContent();
         $newFoundObject = $serializer->deserialize($jsonData, FoundObject::class, 'json');
-        $station 
+        $stationId = $request->getPayload()->get("station");
+        $station = $em->getRepository(Station::class)->find($stationId);
+        if($station){
+            $newFoundObject->setStation($station);    
+        }else{
+            return new JsonResponse(['error' => 'Station not found', Response::HTTP_NOT_FOUND]);
+        }
+
         $em->persist($newFoundObject);
         $em->flush();
         return new JsonResponse(['message' => 'FoundObject Created'], 200);
@@ -54,6 +62,13 @@ class FoundObjectController extends AbstractController
         }
     
         $serializer->deserialize($request->getContent(), FoundObject::class, 'json', ['object_to_populate' => $foundObject]);
+        $stationId = $request->getPayload()->get("station");
+        $station = $em->getRepository(Station::class)->find($stationId);
+        if($station){
+            $foundObject->setStation($station);    
+        }else{
+            return new JsonResponse(['error' => 'Station not found', Response::HTTP_NOT_FOUND]);
+        }
         $em->flush();
         return $this->json($foundObject, 200, [], ['groups' => 'FoundObject:read']);
     }

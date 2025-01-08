@@ -15,16 +15,16 @@ class Station
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(["Station:read ", "FoundObject:read"])]
+    #[Groups(["Station:read", "FoundObject:read"])]
     private ?int $id = null;
     
     #[ORM\Column(length: 255)]
-    #[Groups(["Station:read ", "FoundObject:read"])]
+    #[Groups(["Station:read", "FoundObject:read"])]
     
     private ?string $name = null;
     
     #[ORM\Column(type: Types::TEXT)]
-    #[Groups(["Station:read ", "FoundObject:read"])]
+    #[Groups(["Station:read", "FoundObject:read"])]
     private ?string $localisation = null;
     
     /**

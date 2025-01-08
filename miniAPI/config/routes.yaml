@@ -3,3 +3,9 @@ controllers:
         path: ../src/Controller/
         namespace: App\Controller
     type: attribute
+api_login_check:
+    path: /login_check
+registerv1:
+    path: /api/register
+    controller: App\Controller\UserController::addUser
+    methods: [POST]

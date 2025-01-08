@@ -10,9 +10,11 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 
+#[Route('/api')]
 class UserController extends AbstractController
 {
     #[Route('/user', name: 'users', methods: ['GET'])]
@@ -23,19 +25,21 @@ class UserController extends AbstractController
     }
 
     #[Route('/user', name: 'add_user', methods: ['POST'])]
-    public function addUser(Request $request, SerializerInterface $serializer, EntityManagerInterface $em): JsonResponse
+    public function addUser(Request $request, SerializerInterface $serializer, UserPasswordHasherInterface $uphi, EntityManagerInterface $em): JsonResponse
     {
         $jsonData = $request->getContent();
         $newUser = $serializer->deserialize($jsonData, User::class, 'json');
+        $password = $request->getPayload()->get("password");
+        $newUser->setPassword($uphi->hashPassword($newUser, $password));
         $em->persist($newUser);
         $em->flush();
         return new JsonResponse(['message' => 'User Created'], 200);
     }
 
-    #[Route('/user/{email}', name: 'get_user', methods: ['GET'])]
-    public function getThisUser(string $email, UserRepository $for): JsonResponse
+    #[Route('/user/{id}', name: 'get_user', methods: ['GET'])]
+    public function getThisUser(int $id, UserRepository $for): JsonResponse
     {
-        $user = $for->findOneBy(['email' => $email]);
+        $user = $for->find($id);
         if(!$user){
             return new JsonResponse(['error' => 'User not found', Response::HTTP_NOT_FOUND]);
         }
@@ -43,25 +47,27 @@ class UserController extends AbstractController
         return $this->json($user);
     }
 
-    #[Route('/User/{email}', name: 'update_user', methods: ['PUT'])]
+    #[Route('/user/{id}', name: 'update_user', methods: ['PUT'])]
 
-    public function updateUser(string $email, UserRepository $for, Request $request, SerializerInterface $serializer, EntityManagerInterface $em): JsonResponse
+    public function updateUser(int $id, UserRepository $for, Request $request, UserPasswordHasherInterface $uphi, SerializerInterface $serializer, EntityManagerInterface $em): JsonResponse
     {
-        $user = $for->findOneBy(['email' => $email]);
+        $user = $for->find($id);
         if(!$user){
             return new JsonResponse(['error' => 'User not found', Response::HTTP_NOT_FOUND]);
         }
 
         $serializer->deserialize($request->getContent(), User::class, 'json', ['object_to_populate' => $user]);
+        $password = $request->getPayload()->get("password");
+        $user->setPassword($uphi->hashPassword($user, $password));
         $em->flush();
         return $this->json($user);
     }
 
-    #[Route('/User/{email}', name: 'delete_user', methods: ['DELETE'])]
+    #[Route('/user/{id}', name: 'delete_user', methods: ['DELETE'])]
 
-    public function deleteUser(string $email, UserRepository $for, EntityManagerInterface $em): JsonResponse
+    public function deleteUser(int $id, UserRepository $for, EntityManagerInterface $em): JsonResponse
     {
-        $user = $for->findOneBy(['email' => $email]);
+        $user = $for->find($id);
         if(!$user){
             return new JsonResponse(['error' => 'User not found', Response::HTTP_NOT_FOUND]);
         }
