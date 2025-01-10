@@ -1,15 +1,11 @@
 import './App.css'
-import SearchBar from './Components/Ex3/SearchBar'
-import Divider from './Components/Ex3/Divider';
-import ProductTable from './Components/Ex3/ProductTable';
+import SimpleForm from './Components/Ex4/SimpleForm'
+import Cinema from './Components/Ex5Cinema/Cinema'
 
 function App() {
-
   return (
     <div>
-      <SearchBar/>
-      <Divider/>
-      <ProductTable/>
+      <SimpleForm/>
     </div>
   )
 }
