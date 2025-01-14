@@ -1,0 +1,35 @@
+#detailsImg {
+    width: 40vw;
+}
+
+.fav2 {
+    position: absolute;
+    top: 0px;
+    left: 2px;
+    width: 16px;
+    height: 16px;
+    color: red;
+    vertical-align: 1em !important;
+}
+
+#img {
+    position: relative;
+}
+
+h2 {
+    color: #27d08a;
+    font-weight: bolder;
+}
+
+.movieVariableType {
+    color: #27d08a;
+    font-weight: bolder;
+    font-size: 1.5vw;
+    margin-right: 5px;
+}
+
+.movieVariableValue {
+    color: #707686;
+    font-size: 1.4vw;
+    margin-right: 5px;
+}

@@ -10,9 +10,9 @@ function Cinema() {
             <BrowserRouter>
                 <Routes>
                     <Route path="/" element= {<PopularMoviePage/>} />
-                    <Route path="/details/{id}" element= {<DetailsMoviePage/>} />
-                    <Route path="/favorites" element= {<FavoriteMoviePage/>} />
-                    <Route path="/search/{search}" element= {<SearchMoviePage/>} />
+                    <Route path="details/:id" element= {<DetailsMoviePage/>} />
+                    <Route path="favorites" element= {<FavoriteMoviePage/>} />
+                    <Route path="search/:search" element= {<SearchMoviePage/>} />
                 </Routes>
             </BrowserRouter>
         </>

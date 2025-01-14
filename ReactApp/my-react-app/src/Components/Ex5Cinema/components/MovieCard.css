@@ -1,0 +1,70 @@
+.card {
+    --bs-card-border-color: null;
+    --bs-card-inner-border-radius: null;
+}
+
+.fav {
+    position: absolute;
+    bottom: 6px;
+    right: 2px;
+    width: 16px;
+    height: 16px;
+    color: red;
+    vertical-align: 1em!important;
+}
+
+.bi-star-fill {
+    color: yellow;
+}
+
+.movieImg {
+    width: 100%;
+    height: auto;
+    position: relative;
+}
+
+.movieDetails {
+    position: absolute;
+    opacity: 0;
+    background-color: rgba(128,128,128,0.7);
+    width : 100%;
+    height : 100%;
+}
+
+.movieDetails:hover {
+    opacity: 1;
+}
+
+.movieText {
+    position: absolute;
+    left : 4px;
+    width : 90%;
+    height : 100%;
+}
+
+.movieText:hover {
+    opacity: 1;
+}
+
+.movieTitle {
+    font-size:  0.5em;
+    color: white;
+}
+
+.movieDate {
+    font-size:  0.45em;
+    color: white;
+}
+
+.movieDesc {
+    font-size:  0.4em;
+    color: white;
+}
+
+.movieRating {
+    position: absolute;
+    bottom : 2px;
+    font-size: 0.5em;
+    color: white;
+}
+

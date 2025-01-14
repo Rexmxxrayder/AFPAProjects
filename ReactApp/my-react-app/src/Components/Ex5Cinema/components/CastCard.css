@@ -1,0 +1,10 @@
+.castImg {
+    border-radius: 50%;
+    width: 15vw;
+    height: 15vw;
+    object-fit: cover;
+}
+
+.castTitle {
+    color: white;
+}

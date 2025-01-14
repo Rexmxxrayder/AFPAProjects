@@ -1,7 +1,7 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import NavBar from '../components/NavBar';
 import './MoviePage.css'
-import MovieDisplay from '../components/MovieDisplay';
+import MovieDisplay from '../components/MoviesDisplay';
 import React, { useState, useEffect } from 'react';
 
 const PopularMoviePage = () => {
