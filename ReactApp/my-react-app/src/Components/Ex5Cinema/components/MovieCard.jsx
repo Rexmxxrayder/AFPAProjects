@@ -27,10 +27,10 @@ function MovieCard({ movieData }) {
     function invFav(){
         let favMovies = securityFav();
         if(isFav(movieData.id)){
-            favMovies.splice(favMovies.indexOf(movieData.id), 1);
+            let index = favMovies.findIndex(obj => obj.id === movieData.id);
+            favMovies.splice(index, 1);
         }else {
-            console.log(favMovies.length);
-            favMovies.push(movieData.id);
+            favMovies.push(movieData);
         }
 
         localStorage.setItem("favMovies", JSON.stringify(favMovies));
@@ -39,12 +39,11 @@ function MovieCard({ movieData }) {
 
     function securityFav(){
         let favMovies = localStorage.getItem("favMovies");
-        console.log(typeof favMovies);
         return favMovies === "" || favMovies === null ? [] : JSON.parse(favMovies);
     }
 
     function isFav(movieId){
-        return securityFav().indexOf(movieId) !== -1;
+        return securityFav().findIndex(obj => obj.id === movieId) !== -1;
     }
 
     return (

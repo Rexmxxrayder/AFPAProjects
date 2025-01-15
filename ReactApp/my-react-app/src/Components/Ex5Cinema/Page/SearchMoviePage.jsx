@@ -43,7 +43,7 @@ const SearchMoviePage = () => {
             {isLoading > 0 ? (
                 <p>Loading...</p>
             ) : (
-                <MovieDisplay moviesData={moviesData} />
+                <MovieDisplay moviesData={moviesData.results} />
             )}
         </>
     )

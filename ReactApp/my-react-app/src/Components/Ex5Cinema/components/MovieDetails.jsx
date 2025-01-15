@@ -11,27 +11,26 @@ function MovieDetails({ movieData, movieCredits }) {
     useEffect(() => {
     }, [fav]);
 
-    function invFav() {
+    function invFav(){
         let favMovies = securityFav();
-        if (isFav(movieData.id)) {
-            favMovies.splice(favMovies.indexOf(movieData.id), 1);
-        } else {
-            console.log(favMovies.length);
-            favMovies.push(movieData.id);
+        if(isFav(movieData.id)){
+            let index = favMovies.findIndex(obj => obj.id === movieData.id);
+            favMovies.splice(index, 1);
+        }else {
+            favMovies.push(movieData);
         }
 
         localStorage.setItem("favMovies", JSON.stringify(favMovies));
         updatefav(prev => !prev)
     }
 
-    function securityFav() {
+    function securityFav(){
         let favMovies = localStorage.getItem("favMovies");
-        console.log(typeof favMovies);
         return favMovies === "" || favMovies === null ? [] : JSON.parse(favMovies);
     }
 
-    function isFav(movieId) {
-        return securityFav().indexOf(movieId) !== -1;
+    function isFav(movieId){
+        return securityFav().findIndex(obj => obj.id === movieId) !== -1;
     }
 
     return (

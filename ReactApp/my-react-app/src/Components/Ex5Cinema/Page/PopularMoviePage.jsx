@@ -20,6 +20,7 @@ const PopularMoviePage = () => {
             .then(response => response.json())
             .then(data => {
                 setMoviesData(data);
+                console.log(data);
                 setIsLoading(false)
             })
             .catch(error => {
@@ -39,7 +40,7 @@ const PopularMoviePage = () => {
             {isLoading ? (
                 <p>Loading...</p> 
             ) : (
-                <MovieDisplay moviesData={moviesData} />  
+                <MovieDisplay moviesData={moviesData.results} />  
             )}
         </>
     )
